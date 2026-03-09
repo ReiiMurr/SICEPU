@@ -12,8 +12,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-import { MobileNav } from "@/components/mobile-nav";
-
 export const metadata: Metadata = {
   title: "SICEPU",
   description: "Website laporan pengaduan masyarakat",
@@ -33,10 +31,9 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="transition-colors duration-200 min-h-dvh antialiased pb-20 lg:pb-0"
+        className="transition-colors duration-200 min-h-dvh antialiased"
       >
         {children}
-        <MobileNav />
       </body>
     </html>
   );

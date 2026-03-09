@@ -145,10 +145,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
   }
 }
 
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
 /* Card Hover States */
 .hover-card {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
