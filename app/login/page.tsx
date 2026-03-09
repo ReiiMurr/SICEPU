@@ -142,7 +142,7 @@ export default function LoginPage() {
                   </div>
                   <div className="text-center">
                     <h1 className="text-3xl font-bold tracking-tighter">Selamat Datang</h1>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground mt-1.5 opacity-60">Portal Desa Sejahtera</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground mt-1.5 opacity-60">Portal SICEPU</p>
                   </div>
                 </Link>
               </div>

@@ -260,7 +260,7 @@ export default function CreateAduanPage() {
                             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
                                 <Mountain size={20} />
                             </div>
-                            <h1 className="text-xl font-bold tracking-tight">Desa Sejahtera</h1>
+                            <h1 className="text-xl font-bold tracking-tight">SICEPU</h1>
                         </Link>
                     </div>
 

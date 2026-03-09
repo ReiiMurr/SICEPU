@@ -119,7 +119,7 @@ export default function AdminDashboard() {
             transition={{ delay: 0.1 }}
             className="text-muted-foreground mt-2 font-semibold uppercase text-[10px] tracking-[0.2em] opacity-60"
           >
-            Pusat Kendali Desa Sejahtera
+            Pusat Kendali SICEPU
           </motion.p>
         </div>
 
@@ -249,7 +249,7 @@ export default function AdminDashboard() {
           <div className="mt-8 p-6 rounded-2xl md:rounded-3xl bg-card border border-border/50">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-              <span className="text-[9px] font-semibold uppercase tracking-widest text-primary/80">Cluster Sejahtera-01</span>
+              <span className="text-[9px] font-semibold uppercase tracking-widest text-primary/80">Cluster SICEPU-01</span>
             </div>
             <div className="space-y-3">
               <div className="flex justify-between items-center text-[9px] font-semibold uppercase tracking-widest leading-none">
@@ -343,7 +343,7 @@ export default function AdminDashboard() {
                   </td>
                   <td className="px-10 py-8 text-left">
                     <p className="text-xs font-semibold text-foreground text-left">{formatTimeAgo(report.created_at)}</p>
-                    <p className="text-[9px] font-semibold text-muted-foreground/40 mt-1 uppercase tracking-widest text-left">Waktu Desa</p>
+                    <p className="text-[9px] font-semibold text-muted-foreground/40 mt-1 uppercase tracking-widest text-left">Waktu SICEPU</p>
                   </td>
                   <td className="px-10 py-8 text-right">
                     <Link href={`/admin/reports?id=${report.id}`}>

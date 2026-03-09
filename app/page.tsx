@@ -8,7 +8,8 @@ import {
   useTransform,
   animate,
   useInView,
-  AnimatePresence
+  AnimatePresence,
+  useAnimationFrame
 } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -112,6 +113,8 @@ export default function Home() {
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [stats, setStats] = useState({ total: 0, diproses: 0, selesai: 0, baru: 0 });
+  const officialX = useMotionValue(0);
+  const [isOfficialInteracting, setIsOfficialInteracting] = useState(false);
   const router = useRouter();
 
   const { scrollYProgress } = useScroll();
@@ -133,8 +136,22 @@ export default function Home() {
      const timer = setInterval(() => {
        setCurrentBg((prev) => (prev + 1) % heroImages.length);
      }, 6000);
-     return () => clearInterval(timer);
-   }, []);
+    return () => clearInterval(timer);
+  }, []);
+
+  useAnimationFrame((t, delta) => {
+    if (!isOfficialInteracting && mounted) {
+      const currentX = officialX.get();
+      const moveBy = delta * 0.04;
+      const totalWidth = officials.length * 332;
+      
+      let newX = currentX - moveBy;
+      if (newX <= -totalWidth) {
+        newX = 0;
+      }
+      officialX.set(newX);
+    }
+  });
 
    useEffect(() => {
      const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -245,7 +262,7 @@ export default function Home() {
               "text-xl font-bold tracking-tight transition-colors duration-300",
               isScrolled ? "text-foreground" : "text-white"
             )}>
-              Desa Sejahtera
+              SICEPU
             </span>
           </Link>
 
@@ -396,7 +413,7 @@ export default function Home() {
                       <span className="text-primary italic font-medium">Pengaduan Rakyat</span>
                     </h1>
                     <p className="mt-8 text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
-                      Wadah aspirasi masyarakat Desa Sejahtera yang transparan, profesional, dan responsif terhadap seluruh laporan Anda.
+                      Wadah aspirasi masyarakat SICEPU yang transparan, profesional, dan responsif terhadap seluruh laporan Anda.
                     </p>
                   </motion.div>
 
@@ -582,34 +599,36 @@ export default function Home() {
                      className="mb-16"
                    >
                      <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-center md:text-left">Perangkat Desa</h2>
-                     <p className="mt-4 text-muted-foreground text-lg text-center md:text-left">Tokoh-tokoh penggerak pembangunan Desa Sejahtera.</p>
+                     <p className="mt-4 text-muted-foreground text-lg text-center md:text-left">Tokoh-tokoh penggerak pembangunan SICEPU.</p>
                    </motion.div>
 
-                  <div className="relative" ref={constraintsRef}>
-                    <motion.div
-                      drag="x"
-                      dragConstraints={{ right: 0, left: -((officials.length * 320) - 1200) }}
-                      className="flex gap-8 cursor-grab active:cursor-grabbing pb-12"
-                    >
-                       {officials.map((official, i) => (
-                         <motion.div 
+                   <div className="relative overflow-hidden">
+                     
+                     <motion.div
+                       className="flex gap-8 pb-12 cursor-grab active:cursor-grabbing"
+                       style={{ x: officialX, width: "fit-content" }}
+                       drag="x"
+                       onDragStart={() => setIsOfficialInteracting(true)}
+                       onDragEnd={() => setIsOfficialInteracting(false)}
+                       onMouseEnter={() => setIsOfficialInteracting(true)}
+                       onMouseLeave={() => setIsOfficialInteracting(false)}
+                     >
+                       {[...officials, ...officials].map((official, i) => (
+                         <div 
                            key={i} 
-                           initial={{ opacity: 0, x: 50 }}
-                           whileInView={{ opacity: 1, x: 0 }}
-                           transition={{ delay: i * 0.1, duration: 0.5 }}
                            className="min-w-[300px] select-none"
                          >
-                           <div className="aspect-[3/4] rounded-lg overflow-hidden border border-border transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_45px_100px_-25px_rgba(0,0,0,0.2)] relative group">
-                             <img src={official.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={official.name} />
+                           <div className="aspect-[3/4] rounded-lg overflow-hidden border border-border transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_45px_100px_-25px_rgba(0,0,0,0.2)] relative group/card">
+                             <img src={official.image} className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110" alt={official.name} />
                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-8 flex flex-col justify-end">
                                <h4 className="text-white text-xl font-bold">{official.name}</h4>
                                <p className="text-primary font-bold text-xs uppercase tracking-widest mt-1">{official.role}</p>
                              </div>
                            </div>
-                         </motion.div>
+                         </div>
                        ))}
-                    </motion.div>
-                  </div>
+                     </motion.div>
+                   </div>
                 </div>
               </section>
 

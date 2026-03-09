@@ -23,7 +23,7 @@ import {
 
 export default function AdminSettingsPage() {
     const [settings, setSettings] = useState({
-        siteName: "Laporin Desa Sejahtera",
+        siteName: "SICEPU (Sistem Informasi Cerdas Pelayanan Umum)",
         notifyEmail: "laporin.service@gmail.com",
         allowPublic: true,
         maintenance: false,
@@ -148,7 +148,7 @@ export default function AdminSettingsPage() {
                                 <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                     <Layout size={20} />
                                 </div>
-                                <h3 className="text-lg font-bold tracking-tight text-foreground">Profil Portal Laporin</h3>
+                                <h3 className="text-lg font-bold tracking-tight text-foreground">Profil Portal SICEPU</h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

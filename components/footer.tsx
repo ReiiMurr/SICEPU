@@ -15,7 +15,7 @@ export function Footer() {
                             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
                                 <Mountain size={18} />
                             </div>
-                            <h2 className="text-xl font-bold tracking-tight text-foreground">Desa Sejahtera</h2>
+                            <h2 className="text-xl font-bold tracking-tight text-foreground">SICEPU</h2>
                         </div>
                         <p className="text-sm leading-relaxed max-w-xs">
                             Mewujudkan tata kelola desa yang transparan, profesional, dan responsif terhadap
@@ -54,7 +54,7 @@ export function Footer() {
                                     <MapPin size={16} className="text-primary" />
                                 </div>
                                 <span className="leading-relaxed group-hover:text-foreground transition-colors">
-                                    Jl. Melati No. 45, Desa Sejahtera, Kec. Jaya Makmur, Kabupaten Bogor, 16810
+                                    Jl. Melati No. 45, SICEPU, Kec. Jaya Makmur, Kabupaten Bogor, 16810
                                 </span>
                             </li>
                             <li className="flex items-center gap-3 group">
@@ -67,7 +67,7 @@ export function Footer() {
                                 <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
                                     <Mail size={16} className="text-primary" />
                                 </div>
-                                <span className="group-hover:text-foreground transition-colors">kontak@desasejahtera.go.id</span>
+                                <span className="group-hover:text-foreground transition-colors">kontak@sicepu.go.id</span>
                             </li>
                         </ul>
                     </div>
@@ -112,7 +112,7 @@ export function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="mt-20 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium">
-                    <p>© 2024 Pemerintah Desa Sejahtera. All rights reserved.</p>
+                    <p>© 2024 Pemerintah SICEPU. All rights reserved.</p>
                     <div className="flex gap-8">
                         <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
                         <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>

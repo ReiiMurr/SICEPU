@@ -96,7 +96,7 @@ export default function TentangPage() {
                         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
                             <Mountain size={18} />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">Desa Sejahtera</h1>
+                        <h1 className="text-xl font-bold tracking-tight">SICEPU</h1>
                     </Link>
 
                     <nav className="hidden items-center gap-1 lg:flex">
@@ -162,7 +162,7 @@ export default function TentangPage() {
                                 <span className="text-primary italic">Transparansi Digital</span>
                             </h1>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                                Laporin adalah platform resmi aspirasi dan pengaduan online yang dirancang khusus untuk mempercepat respon pemerintah desa terhadap kebutuhan warga.
+                                SICEPU adalah platform resmi aspirasi dan pengaduan online yang dirancang khusus untuk mempercepat respon pemerintah desa terhadap kebutuhan warga.
                             </p>
                         </motion.div>
                     </div>
@@ -198,7 +198,7 @@ export default function TentangPage() {
                                             "Menyederhanakan proses penyampaian aspirasi masyarakat.",
                                             "Menjamin keamanan dan kerahasiaan identitas setiap pelapor.",
                                             "Mempercepat waktu penanganan masalah di lapangan.",
-                                            "Membangun kepercayaan antara warga dan perangkat desa."
+                                            "Mewujudkan tata kelola desa yang transparan, profesional, dan responsif melalui platform SICEPU."
                                         ].map((item, i) => (
                                             <li key={i} className="flex gap-4 items-start text-muted-foreground group">
                                                 <div className="mt-1 h-6 w-6 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
@@ -275,11 +275,11 @@ export default function TentangPage() {
                             <div className="space-y-8 text-center md:text-left relative z-10">
                                 <div className="h-1 w-16 bg-primary mx-auto md:mx-0" />
                                 <blockquote className="text-2xl md:text-3xl font-medium italic text-slate-100 leading-snug">
-                                    "Platform Laporin adalah langkah nyata kami untuk mendengar suara rakyat lebih dekat. Tidak ada kemajuan tanpa kolaborasi transparan antara warga dan pemerintah."
+                                    "Platform SICEPU adalah langkah nyata kami untuk mendengar suara rakyat lebih dekat. Tidak ada kemajuan tanpa kolaborasi transparan antara warga dan pemerintah."
                                 </blockquote>
                                 <div>
                                     <h4 className="text-xl font-bold text-white tracking-tight">Sudirjo, S.Sos</h4>
-                                    <p className="text-primary font-bold text-xs uppercase tracking-widest mt-1">Kepala Desa Sejahtera</p>
+                                    <p className="text-primary font-bold text-xs uppercase tracking-widest mt-1">Kepala SICEPU</p>
                                 </div>
                             </div>
                         </div>
@@ -296,8 +296,8 @@ export default function TentangPage() {
 
                         <div className="grid md:grid-cols-3 gap-8">
                             {[
-                                { icon: <MapPin size={28} />, title: "Alamat Kantor", val: "Jl. Melati No. 45, Desa Sejahtera", sub: "Gedung Pelayanan Publik, Lantai 1" },
-                                { icon: <Mail size={28} />, title: "Email Resmi", val: "kontak@desasejahtera.go.id", sub: "Respon harian 1x24 jam kerja" },
+                                { icon: <MapPin size={28} />, title: "Alamat Kantor", val: "Jl. Melati No. 45, SICEPU", sub: "Gedung Pelayanan Publik, Lantai 1" },
+                                { icon: <Mail size={28} />, title: "Email Resmi", val: "kontak@sicepu.go.id", sub: "Respon harian 1x24 jam kerja" },
                                 { icon: <Phone size={28} />, title: "Layanan Darurat", val: "+62 821 1234 5678", sub: "Senin - Jumat, 08:00 - 16:00" }
                             ].map((item, i) => (
                                 <div key={i} className="flex flex-col items-center p-12 rounded-[2.5rem] bg-muted/30 border border-transparent hover:border-border transition-all text-center group">

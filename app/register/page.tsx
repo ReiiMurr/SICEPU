@@ -111,7 +111,7 @@ export default function RegisterPage() {
                   </div>
                 </Link>
                 <h1 className="text-3xl font-bold tracking-tighter text-foreground">Buat Akun Baru</h1>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mt-2 opacity-60 text-center">Pendaftaran Masyarakat Desa Sejahtera</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mt-2 opacity-60 text-center">Pendaftaran Masyarakat SICEPU</p>
               </div>
 
               <Card className="overflow-hidden border-border/40 bg-card/40 shadow-2xl backdrop-blur-3xl rounded-[2.5rem]">

@@ -164,7 +164,7 @@ export default function LaporanPublikPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
               <Mountain size={18} />
             </div>
-            <h1 className="text-xl font-bold tracking-tight">Desa Sejahtera</h1>
+            <h1 className="text-xl font-bold tracking-tight">SICEPU</h1>
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex">
@@ -218,7 +218,7 @@ export default function LaporanPublikPage() {
                     <span className="text-primary font-bold text-[10px] uppercase tracking-[0.3em] mb-4 inline-block">Masyarakat Terbuka</span>
                     <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">Eksplorasi Aduan Publik</h2>
                     <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-                      Wadah transparansi bagi seluruh masyarakat untuk memantau kemajuan pembangunan dan penanganan masalah di Desa Sejahtera.
+                      Wadah keterbukaan informasi atas seluruh aduan masyarakat SICEPU.
                     </p>
                   </motion.div>
                 </div>
@@ -383,7 +383,7 @@ export default function LaporanPublikPage() {
                         Catatan Transparansi
                       </h4>
                       <p className="text-muted-foreground leading-relaxed">
-                        Data ini disajikan secara terbuka untuk mendukung tata kelola pemerintahan desa yang bersih. Informasi telah divalidasi oleh tim admin lapangan Desa Sejahtera.
+                        Data ini disajikan secara terbuka untuk mendukung tata kelola pemerintahan desa yang bersih. Informasi telah divalidasi oleh tim admin lapangan SICEPU.
                       </p>
                     </div>
                   </div>

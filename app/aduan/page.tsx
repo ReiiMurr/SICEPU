@@ -146,7 +146,7 @@ export default function LaporankuPage() {
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
                             <Mountain size={18} />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">Desa Sejahtera</h1>
+                        <h1 className="text-xl font-bold tracking-tight">SICEPU</h1>
                     </Link>
 
                     <nav className="hidden items-center gap-1 lg:flex">
@@ -344,7 +344,7 @@ export default function LaporankuPage() {
                               Progres Penanganan
                             </h4>
                             <p className="text-muted-foreground leading-relaxed">
-                              Laporan Anda sedang dalam tahap peninjauan oleh tim admin Desa Sejahtera. Anda akan menerima notifikasi jika ada perubahan status atau kebutuhan informasi tambahan.
+                              Laporan Anda sedang dalam tahap peninjauan oleh tim admin SICEPU. Anda akan menerima notifikasi jika ada perubahan status atau kebutuhan informasi tambahan.
                             </p>
                           </div>
                         </div>
