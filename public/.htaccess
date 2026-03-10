@@ -1,0 +1,22 @@
+# Handle Next.js Static Export Routing
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Redirect if a slash is missing for a directory
+  # This avoids 403 issues when hitting /page instead of /page/
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteCond %{REQUEST_URI} !(.+)/$
+  RewriteRule ^(.+)$ /$1/ [L,R=301]
+
+  # 2. Redirect to index.html if file/dir not found (SPA routing)
+  # This handles cases where user refreshes on a dynamic route
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
