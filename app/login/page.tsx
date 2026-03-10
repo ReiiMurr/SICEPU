@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Mountain,
   Mail,
@@ -25,6 +25,8 @@ import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirect") || "/";
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -55,7 +57,7 @@ export default function LoginPage() {
           if (isAdmin) {
             router.push("/admin");
           } else {
-            router.push("/");
+            router.push(redirectPath);
           }
         }
       } catch (e) {
@@ -110,10 +112,10 @@ export default function LoginPage() {
       if (role === "admin" || role === "petugas" || isAdminEmail) {
         router.push("/admin");
       } else {
-        router.push("/");
+        router.push(redirectPath);
       }
     } else {
-      router.push("/");
+      router.push(redirectPath);
     }
     setLoading(false);
   }
@@ -158,6 +160,8 @@ export default function LoginPage() {
                           <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                           <Input
                             id="email"
+                            name="email"
+                            autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             type="email"
@@ -178,6 +182,8 @@ export default function LoginPage() {
                           <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                           <Input
                             id="password"
+                            name="password"
+                            autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             type={showPassword ? "text" : "password"}
@@ -198,6 +204,7 @@ export default function LoginPage() {
                       {/* Remember Me */}
                       <div className="flex items-center gap-3 px-1">
                         <button
+                          id="rememberMe"
                           type="button"
                           onClick={() => setRememberMe(!rememberMe)}
                           className={cn(
@@ -210,6 +217,7 @@ export default function LoginPage() {
                           {rememberMe && <Check size={12} strokeWidth={4} className="text-white" />}
                         </button>
                         <Label
+                          htmlFor="rememberMe"
                           onClick={() => setRememberMe(!rememberMe)}
                           className="cursor-pointer text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors selection:none"
                         >
@@ -259,7 +267,10 @@ export default function LoginPage() {
                     <div className="text-center">
                       <p className="text-xs font-bold text-muted-foreground">
                         Belum memiliki akun?{" "}
-                        <Link className="font-black text-primary hover:opacity-80 transition-all decoration-2 underline-offset-4 hover:underline" href="/register">
+                        <Link 
+                          className="font-black text-primary hover:opacity-80 transition-all decoration-2 underline-offset-4 hover:underline" 
+                          href={`/register${redirectPath !== "/" ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`}
+                        >
                           Daftar Akun Baru
                         </Link>
                       </p>

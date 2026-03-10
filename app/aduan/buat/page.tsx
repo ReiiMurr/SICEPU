@@ -44,6 +44,7 @@ interface Attachment {
 
 export default function CreateAduanPage() {
     const [user, setUser] = useState<any>(null);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,9 +84,19 @@ export default function CreateAduanPage() {
             try {
                 const supabase = getSupabaseClient();
                 const { data: { user } } = await supabase.auth.getUser();
-                setUser(user);
+                if (!user) {
+                    router.push("/login?redirect=/aduan/buat");
+                    return;
+                }
+                if (user) {
+                    const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+                    setUser({ ...user, profile });
+                }
             } catch (error) {
                 console.error("Auth check failed:", error);
+                router.push("/login?redirect=/aduan/buat");
+            } finally {
+                setIsCheckingAuth(false);
             }
         };
 
@@ -237,6 +248,27 @@ export default function CreateAduanPage() {
                 throw insertError;
             }
 
+            // --- Send Admin Notification ---
+            try {
+                const adminEmail = "laporin.service@gmail.com";
+                const reporterName = user.profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0] || "Warga Anonymous";
+                
+                await fetch("/api/notify-admin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        title: formData.title,
+                        location: formData.location,
+                        description: formData.description,
+                        reporter: reporterName,
+                        adminEmail: adminEmail
+                    }),
+                });
+            } catch (notifyError) {
+                console.error("Failed to notify admin via email:", notifyError);
+                // We don't throw here to avoid failing the whole process if email fails
+            }
+
             localStorage.removeItem("aduan_draft");
             window.location.href = "/aduan?success=1";
         } catch (err: any) {
@@ -245,6 +277,17 @@ export default function CreateAduanPage() {
             setLoading(false);
         }
     };
+
+    if (isCheckingAuth) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="h-12 w-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                    <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground animate-pulse">Memeriksa Akses...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors font-display">
@@ -286,7 +329,7 @@ export default function CreateAduanPage() {
                                 >
                                     <div className="flex flex-col items-end pl-2">
                                         <span className="text-xs font-bold tracking-tight text-foreground line-clamp-1">
-                                            {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                                            {user.profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0]}
                                         </span>
                                         <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
                                             Pengguna
@@ -417,6 +460,7 @@ export default function CreateAduanPage() {
                             <div className="space-y-3">
                                 <label className="text-sm font-black uppercase tracking-widest text-muted-foreground">Judul Laporan</label>
                                 <input
+                                    id="title"
                                     name="title"
                                     value={formData.title || ""}
                                     onChange={handleInputChange}
@@ -432,6 +476,7 @@ export default function CreateAduanPage() {
                                 <div className="space-y-3">
                                     <label className="text-sm font-black uppercase tracking-widest text-muted-foreground">Tanggal Kejadian</label>
                                     <input
+                                        id="date"
                                         name="date"
                                         value={formData.date || ""}
                                         onChange={handleInputChange}
@@ -446,6 +491,7 @@ export default function CreateAduanPage() {
                             <div className="space-y-3">
                                 <label className="text-sm font-black uppercase tracking-widest text-muted-foreground">Isi Laporan / Deskripsi</label>
                                 <textarea
+                                    id="description"
                                     name="description"
                                     value={formData.description || ""}
                                     onChange={handleInputChange}
@@ -462,6 +508,7 @@ export default function CreateAduanPage() {
                                 <div className="relative group">
                                     <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within:text-primary transition-colors" />
                                     <input
+                                        id="location"
                                         name="location"
                                         value={formData.location || ""}
                                         onChange={handleInputChange}
@@ -539,6 +586,8 @@ export default function CreateAduanPage() {
                                     </AnimatePresence>
                                 </div>
                                 <input
+                                    id="file-attachment"
+                                    name="file-attachment"
                                     ref={fileInputRef}
                                     className="hidden"
                                     type="file"
@@ -558,8 +607,9 @@ export default function CreateAduanPage() {
                             <div className="space-y-5 pt-8 border-t border-border">
                                 <label className="text-sm font-black uppercase tracking-widest text-muted-foreground">Privasi Laporan</label>
                                 <div className="flex flex-col sm:flex-row gap-4">
-                                    <label className="flex-1 cursor-pointer group">
+                                    <label className="flex-1 cursor-pointer group" htmlFor="visibility-public">
                                         <input
+                                            id="visibility-public"
                                             name="visibility"
                                             type="radio"
                                             value="Publik"
@@ -577,8 +627,9 @@ export default function CreateAduanPage() {
                                             </div>
                                         </div>
                                     </label>
-                                    <label className="flex-1 cursor-pointer group">
+                                    <label className="flex-1 cursor-pointer group" htmlFor="visibility-private">
                                         <input
+                                            id="visibility-private"
                                             name="visibility"
                                             type="radio"
                                             value="Privat"

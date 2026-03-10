@@ -32,6 +32,9 @@ type Complaint = {
     status: "baru" | "diproses" | "selesai" | "ditolak";
     visibility: "Publik" | "Privat";
     image: string | null;
+    profiles?: {
+        full_name: string | null;
+    };
 };
 
 export default function AdminReportsPage() {
@@ -40,6 +43,8 @@ export default function AdminReportsPage() {
     const [filter, setFilter] = useState("Semua");
     const [search, setSearch] = useState("");
     const [selectedReport, setSelectedReport] = useState<Complaint | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
         fetchReports();
@@ -50,10 +55,10 @@ export default function AdminReportsPage() {
         const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("complaints")
-            .select("*")
+            .select("*, profiles(full_name)")
             .order("created_at", { ascending: false });
 
-        if (data) setReports(data as Complaint[]);
+        if (data) setReports(data as any[]);
         setLoading(false);
     };
 
@@ -68,6 +73,49 @@ export default function AdminReportsPage() {
             setReports(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r));
             if (selectedReport?.id === id) {
                 setSelectedReport(prev => prev ? { ...prev, status: newStatus } : null);
+            }
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedReport) return;
+        setIsDeleting(true);
+        const supabase = getSupabaseClient();
+        const { error } = await supabase
+            .from("complaints")
+            .delete()
+            .eq("id", selectedReport.id);
+
+        if (!error) {
+            setReports(prev => prev.filter(r => r.id !== selectedReport.id));
+            setSelectedReport(null);
+            setShowDeleteConfirm(false);
+        }
+        setIsDeleting(false);
+    };
+
+    const handleShare = async () => {
+        if (!selectedReport) return;
+        
+        const shareData = {
+            title: `Laporan: ${selectedReport.title}`,
+            text: `Detail Laporon SICEPU:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+            url: window.location.origin + `/laporan?id=${selectedReport.id}`
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.error("Error sharing:", err);
+            }
+        } else {
+            // Fallback: Copy to clipboard
+            try {
+                await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}\n\nLink: ${shareData.url}`);
+                alert("Detail laporan telah disalin ke clipboard!");
+            } catch (err) {
+                console.error("Error copying:", err);
             }
         }
     };
@@ -102,6 +150,8 @@ export default function AdminReportsPage() {
                 <div className="flex-1 relative">
                     <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
                     <input
+                        id="search-admin-reports"
+                        name="search-admin-reports"
                         type="text"
                         placeholder="Cari ID atau judul laporan..."
                         value={search}
@@ -166,8 +216,8 @@ export default function AdminReportsPage() {
                                         {new Date(report.created_at).toLocaleDateString()}
                                     </div>
                                     <div className="flex items-center gap-1.5 truncate leading-none">
-                                        <MapPin size={12} />
-                                        {report.location}
+                                        <User size={12} />
+                                        {report.profiles?.full_name || "Warga Anonymous"}
                                     </div>
                                 </div>
                             </motion.div>
@@ -190,10 +240,18 @@ export default function AdminReportsPage() {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <button className="p-2.5 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-all">
+                                    <button 
+                                        onClick={handleShare}
+                                        className="p-2.5 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+                                        title="Bagikan Laporan"
+                                    >
                                         <Share2 size={18} />
                                     </button>
-                                    <button className="p-2.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-all">
+                                    <button 
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                        className="p-2.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-all font-bold text-xs flex items-center gap-2"
+                                        title="Hapus Laporan"
+                                    >
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
@@ -202,9 +260,9 @@ export default function AdminReportsPage() {
                                 <div className="space-y-4">
                                     <h2 className="text-2xl font-bold leading-tight text-foreground">{selectedReport.title}</h2>
                                     <div className="flex flex-wrap gap-2.5">
-                                        <div className="px-3.5 py-1.5 rounded-xl bg-muted/50 border border-border flex items-center gap-2 text-[10px] font-semibold text-foreground">
-                                            <User size={14} className="text-primary" />
-                                            ID Pengguna: {selectedReport.id.slice(-6)}
+                                        <div className="px-3.5 py-1.5 rounded-xl bg-primary/10 border border-primary/20 flex items-center gap-2 text-[10px] font-bold text-primary uppercase tracking-tight">
+                                            <User size={14} />
+                                            Pelapor: {selectedReport.profiles?.full_name || "Warga Anonymous"}
                                         </div>
                                         {selectedReport.date && (
                                             <div className="px-3.5 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 flex items-center gap-2 text-[10px] font-semibold text-orange-600">
@@ -306,6 +364,59 @@ export default function AdminReportsPage() {
                     )}
                 </div>
             </div>
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {showDeleteConfirm && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => !isDeleting && setShowDeleteConfirm(false)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-md bg-card border border-border rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 p-6 opacity-10">
+                                <Trash size={120} />
+                            </div>
+                            <div className="relative z-10 space-y-6">
+                                <div className="h-16 w-16 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500">
+                                    <Trash2 size={32} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold tracking-tight">Hapus Laporan?</h3>
+                                    <p className="text-sm font-semibold text-muted-foreground mt-2 leading-relaxed">
+                                        Tindakan ini tidak dapat dibatalkan. Laporan <span className="text-foreground">"{selectedReport?.title}"</span> akan dihapus permanen dari sistem.
+                                    </p>
+                                </div>
+                                <div className="flex gap-3 pt-2">
+                                    <button
+                                        disabled={isDeleting}
+                                        onClick={() => setShowDeleteConfirm(false)}
+                                        className="flex-1 px-6 py-3.5 rounded-2xl bg-muted/50 font-bold text-[10px] uppercase tracking-widest hover:bg-muted transition-all disabled:opacity-50"
+                                    >
+                                        Batal
+                                    </button>
+                                    <button
+                                        disabled={isDeleting}
+                                        onClick={handleDelete}
+                                        className="flex-1 px-6 py-3.5 rounded-2xl bg-rose-500 text-white font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {isDeleting ? (
+                                            <RefreshCw size={14} className="animate-spin" />
+                                        ) : "Ya, Hapus"}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

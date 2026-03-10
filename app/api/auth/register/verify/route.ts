@@ -3,7 +3,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 
 export async function POST(req: Request) {
     try {
-        const { email, otp, password } = await req.json();
+        const { email, otp, password, fullName } = await req.json();
 
         if (!email || !otp) {
             return NextResponse.json({ error: "Email dan OTP wajib diisi" }, { status: 400 });
@@ -31,7 +31,12 @@ export async function POST(req: Request) {
         // 3. Daftarkan user ke Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
-            password: password, // Password dikirim dari form pendaftaran
+            password: password,
+            options: {
+                data: {
+                    full_name: fullName
+                }
+            }
         });
 
         if (authError) {
@@ -43,16 +48,14 @@ export async function POST(req: Request) {
             const role = email === "laporin.service@gmail.com" ? "admin" : "masyarakat";
             const { error: profileError } = await supabase
                 .from("profiles")
-                .insert([
-                    {
-                        id: authData.user.id,
-                        role: role,
-                        full_name: email.split('@')[0], // Default name dari email
-                    }
-                ]);
+                .upsert({
+                    id: authData.user.id,
+                    role: role,
+                    full_name: fullName || email.split('@')[0],
+                }, { onConflict: 'id' });
 
             if (profileError) {
-                console.error("Gagal membuat profil di DB:", profileError);
+                console.error("Gagal update profil di DB:", profileError);
             }
         }
 

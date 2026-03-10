@@ -49,6 +49,7 @@ import Link from "next/link";
 import { Footer } from "@/components/footer";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { VillageOfficialCard } from "@/components/village-official-card";
+import { ComplaintDetail } from "@/components/complaint-detail";
 import CountUp from "@/components/count-up";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -158,7 +159,15 @@ export default function Home() {
     const checkUser = async () => {
       const supabase = getSupabaseClient();
       const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      if (user) {
+        const { data: profile } = await supabase.from("profiles").select("full_name, role").eq("id", user.id).maybeSingle();
+        setUser({ ...user, profile });
+        
+        // Auto-redirect admin to dashboard
+        if (profile?.role === 'admin') {
+          router.push('/admin');
+        }
+      }
     };
     const fetchReports = async () => {
       try {
@@ -224,9 +233,43 @@ export default function Home() {
     }, 800);
   };
 
+  const handleCreateReport = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user) {
+      router.push("/aduan/buat");
+    } else {
+      router.push("/login?redirect=/aduan/buat");
+    }
+  };
+
+  const handleShare = async () => {
+    if (!selectedReport) return;
+    
+    const shareData = {
+        title: `Laporan: ${selectedReport.title}`,
+        text: `Detail Laporon SICEPU:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+        url: window.location.origin + `/laporan?id=${selectedReport.id}`
+    };
+
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            console.error("Error sharing:", err);
+        }
+    } else {
+        try {
+            await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}\n\nLink: ${shareData.url}`);
+            alert("Detail laporan telah disalin ke clipboard!");
+        } catch (err) {
+            console.error("Error copy:", err);
+        }
+    }
+  };
+
   // Village Officials Data
   const officials = [
-    { name: "Sudirjo, S.Sos", role: "Kepala Desa", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuABoTd3dvDtgZSn8o5c-cG2xzj0pjqASlNzZTI-eqJyaKNIYbcvRxidE340NI2QxLh3tX8mOmm6iKJ6bCd_4QdIIO9kiYMhaVPVCzDLUgFE1dn7ETkoyR2nL7jiuzZNsIwVOB1GYvcOHLb0c0WHyFzvncUU_ZToMioPMq-2l6Kleh5u5nGXKrSlxCnqmuWaNNFAI1mV3Qteez25MUpPaeYDt2QDT5Utc4LJzCZu_FHfur8R3Z0SLQ-BI33dkV3wz8Mw_Sx7aru-iXE" },
+    { name: "Sudirjo, S.Sos", role: "Kepala Desa", image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop" },
     { name: "Siti Aminah", role: "Sekretaris Desa", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" },
     { name: "Budi Santoso", role: "Bendahara Desa", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop" },
     { name: "Dedi Kurniawan", role: "KAUR Pembangunan", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" },
@@ -243,7 +286,7 @@ export default function Home() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ease-in-out px-4 py-4 md:px-10 lg:px-20",
+          "fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 px-4 py-4 md:px-10 lg:px-20",
           isScrolled 
             ? "glass py-3 shadow-premium border-b border-border/50" 
             : "bg-transparent"
@@ -310,8 +353,8 @@ export default function Home() {
                     <User size={16} />
                   </div>
                   <div className="flex flex-col items-start">
-                    <span className="text-xs font-bold leading-none capitalize">
-                      {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                    <span className="text-xs font-bold capitalize">
+                      {user.profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0]}
                     </span>
                   </div>
                 </motion.button>
@@ -428,6 +471,8 @@ export default function Home() {
                         <Search className="text-muted-foreground mr-3" size={20} />
                       </div>
                       <input
+                        id="search-complaint"
+                        name="search-complaint"
                         type="text"
                         placeholder="Contoh: 'Jalan rusak di Dusun II'..."
                         className="w-full py-3 bg-transparent border-none focus:ring-0 text-foreground font-medium placeholder:text-muted-foreground"
@@ -451,12 +496,15 @@ export default function Home() {
                     transition={{ delay: 0.8 }}
                     className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8"
                   >
-                    <Link href="/aduan/buat" className="group relative px-8 py-4 bg-primary text-white font-bold rounded-2xl overflow-hidden shadow-premium hover:shadow-primary/20 transition-all active:scale-95">
+                    <button 
+                      onClick={handleCreateReport}
+                      className="group relative px-8 py-4 bg-primary text-white font-bold rounded-2xl overflow-hidden shadow-premium hover:shadow-primary/20 transition-all active:scale-95"
+                    >
                       <span className="relative z-10 flex items-center gap-2">
                         Buat Laporan Baru <PlusCircle size={20} />
                       </span>
                       <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                    </Link>
+                    </button>
                     <Link href="/laporan" className="flex items-center gap-2 text-white font-bold group hover:text-primary transition-colors">
                       Lihat Laporan Publik <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </Link>
@@ -542,7 +590,10 @@ export default function Home() {
                              whileInView={{ opacity: 1, y: 0 }}
                              transition={{ delay: (reports.indexOf(report) % 2) * 0.1, duration: 0.6 }}
                              whileHover={{ y: -8 }}
-                             onClick={() => setSelectedReport(report)}
+                             onClick={() => {
+                               setSelectedReport(report);
+                               window.scrollTo({ top: 0, behavior: 'instant' });
+                             }}
                              className="group cursor-pointer bg-card border border-border rounded-lg overflow-hidden transition-all hover:shadow-2xl hover:border-primary/40"
                            >
                              <div className="aspect-[16/10] overflow-hidden relative">
@@ -679,63 +730,20 @@ export default function Home() {
               </section>
             </motion.div>
           ) : (
-            <motion.div key="detail" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="mx-auto max-w-5xl px-4 py-32">
+            <motion.div key="detail" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="mx-auto max-w-4xl px-4 py-20">
               <button
-                onClick={() => setSelectedReport(null)}
+                onClick={() => { setSelectedReport(null); window.scrollTo({ top: 0, behavior: 'instant' }); }}
                 className="group mb-12 flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors"
               >
                 <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                 Kembali
               </button>
 
-              <div className="bg-card border border-border rounded-lg overflow-hidden shadow-2xl">
-                <div className="aspect-video w-full overflow-hidden">
-                  {(() => {
-                    const images = selectedReport.image ? (selectedReport.image.startsWith("[") ? JSON.parse(selectedReport.image) : [selectedReport.image]) : ["https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"];
-                    return <ReportImageGallery images={images} title={selectedReport.title} />;
-                  })()}
-                </div>
-                <div className="p-10 md:p-20">
-                  <div className="flex flex-wrap items-center gap-6 mb-10 pb-10 border-b border-border">
-                    <div className="flex items-center gap-2 text-primary bg-primary/5 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-widest">
-                      <Calendar size={16} />
-                      {new Date(selectedReport.date || selectedReport.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </div>
-                    <div className={cn(
-                      "px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-widest border",
-                      selectedReport.status?.toLowerCase() === "selesai" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
-                      selectedReport.status?.toLowerCase() === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-blue-50 text-blue-600 border-blue-200"
-                    )}>
-                      Status: {selectedReport.status || "Baru"}
-                    </div>
-                  </div>
-                  
-                  <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.1] text-foreground mb-10">{selectedReport.title}</h1>
-                  
-                  <div className="prose prose-lg dark:prose-invert max-w-none space-y-8">
-                    <p className="text-xl font-medium leading-relaxed italic text-muted-foreground border-l-4 border-primary pl-8">{selectedReport.description}</p>
-                    <div className="bg-muted/30 p-8 rounded-lg flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                        <MapPin size={24} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Lokasi Laporan</p>
-                        <p className="text-lg font-bold">{selectedReport.location}</p>
-                      </div>
-                    </div>
-                    <p className="pt-6 text-muted-foreground">Laporan ini bersifat publik dan sedang ditangani oleh instansi terkait demi transparansi pembangunan desa.</p>
-                  </div>
-
-                  <div className="mt-20 pt-10 border-t border-border flex flex-wrap gap-4">
-                    <button onClick={() => { setSelectedReport(null); window.scrollTo(0, 0); }} className="px-10 py-4 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
-                      Selesai Membaca
-                    </button>
-                    <button className="px-10 py-4 bg-card border border-border font-bold rounded-2xl flex items-center gap-2 hover:bg-muted transition-all">
-                      <Share2 size={18} /> Bagikan
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <ComplaintDetail 
+                report={selectedReport} 
+                onClose={() => { setSelectedReport(null); window.scrollTo({ top: 0, behavior: 'instant' }); }} 
+                onShare={handleShare}
+              />
             </motion.div>
           )}
         </AnimatePresence>

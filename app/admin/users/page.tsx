@@ -53,17 +53,17 @@ export default function AdminUsersPage() {
             if (error) throw error;
 
             if (profiles) {
-                // In a real app, you might need a secondary join or 
-                // store email in profile for easy admin viewing if not using service_role
-                setUsers(profiles as UserProfile[]);
+                // Filter: Hanya tampilkan peran 'masyarakat' (bukan admin/petugas)
+                const masyarakatOnly = profiles.filter(p => p.role !== "admin" && p.role !== "petugas");
+                setUsers(masyarakatOnly as UserProfile[]);
 
                 setStats({
-                    total: profiles.length,
-                    activeToday: profiles.filter(p => {
+                    total: masyarakatOnly.length,
+                    activeToday: masyarakatOnly.filter((p: any) => {
                         const today = new Date().toISOString().split('T')[0];
                         return p.created_at.startsWith(today);
                     }).length,
-                    suspended: 0 // Logic for suspension could be added here
+                    suspended: 0
                 });
             }
         } catch (err) {
@@ -133,6 +133,8 @@ export default function AdminUsersPage() {
                     <div className="relative max-w-md">
                         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
                         <input
+                            id="search-users"
+                            name="search-users"
                             type="text"
                             placeholder="Cari nama atau ID..."
                             value={search}
@@ -150,14 +152,13 @@ export default function AdminUsersPage() {
                                 <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Peran</th>
                                 <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-center">Bergabung</th>
                                 <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Status</th>
-                                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
-                            {loading ? (
-                                <tr><td colSpan={6} className="p-10 text-center font-semibold text-muted-foreground">Memuat data warga...</td></tr>
+                             {loading ? (
+                                <tr><td colSpan={5} className="p-10 text-center font-semibold text-muted-foreground">Memuat data warga...</td></tr>
                             ) : filteredUsers.length === 0 ? (
-                                <tr><td colSpan={6} className="p-10 text-center font-semibold text-muted-foreground">Tidak ada data warga ditemukan.</td></tr>
+                                <tr><td colSpan={5} className="p-10 text-center font-semibold text-muted-foreground">Tidak ada data warga ditemukan.</td></tr>
                             ) : filteredUsers.map((u) => (
                                 <tr key={u.id} className="hover:bg-muted/30 transition-colors group">
                                     <td className="px-8 py-5">
@@ -182,19 +183,11 @@ export default function AdminUsersPage() {
                                     <td className="px-8 py-5 text-center text-xs font-semibold text-muted-foreground/70">
                                         {new Date(u.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </td>
-                                    <td className="px-8 py-5">
+                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-2">
                                             <div className={cn("w-1.5 h-1.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/10")} />
                                             <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">Aktif</span>
                                         </div>
-                                    </td>
-                                    <td className="px-8 py-5 text-right flex items-center justify-end gap-1">
-                                        <button className="p-2.5 rounded-xl text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all">
-                                            <Edit2 size={16} />
-                                        </button>
-                                        <button className="p-2.5 rounded-xl text-muted-foreground hover:bg-rose-500/10 hover:text-rose-500 transition-all">
-                                            <Ban size={16} />
-                                        </button>
                                     </td>
                                 </tr>
                             ))}

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   UserPlus,
   Mail,
@@ -24,6 +24,9 @@ import { cn } from "@/lib/utils";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirect") || "/";
+  const [fullName, setFullName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [otp, setOtp] = React.useState("");
@@ -68,7 +71,7 @@ export default function RegisterPage() {
       const response = await fetch("/api/auth/register/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp, password }),
+        body: JSON.stringify({ email, otp, password, fullName }),
       });
 
       const data = await response.json();
@@ -79,7 +82,7 @@ export default function RegisterPage() {
 
       setMessage(data.message);
       setTimeout(() => {
-        router.push("/login");
+        router.push(`/login${redirectPath !== "/" ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`);
       }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat verifikasi");
@@ -126,13 +129,31 @@ export default function RegisterPage() {
                         className="space-y-6"
                         onSubmit={onSendOtp}
                       >
-                        <div className="space-y-5">
+                        <div className="space-y-4">
+                          <div className="space-y-2.5">
+                            <Label htmlFor="fullName" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Nama Lengkap Sesuai KTP</Label>
+                            <div className="relative group">
+                              <UserPlus size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                              <Input
+                                id="fullName"
+                                name="fullName"
+                                autoComplete="name"
+                                placeholder="Masukkan nama lengkap kamu"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                className="h-12 border-transparent bg-muted/30 pl-11 pr-4 font-semibold placeholder:text-muted-foreground/30 focus:border-primary/20 focus:ring-4 focus:ring-primary/5 rounded-2xl transition-all text-foreground"
+                                required
+                              />
+                            </div>
+                          </div>
                           <div className="space-y-2.5">
                             <Label htmlFor="email" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Alamat Email Aktif</Label>
                             <div className="relative group">
                               <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                               <Input
                                 id="email"
+                                name="email"
+                                autoComplete="email"
                                 placeholder="nama@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -149,6 +170,8 @@ export default function RegisterPage() {
                               <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
                               <Input
                                 id="password"
+                                name="password"
+                                autoComplete="new-password"
                                 placeholder="Minimal 6 karakter"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -192,6 +215,8 @@ export default function RegisterPage() {
                           <Label htmlFor="otp" className="text-center block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Masukkan 6 Digit Kode OTP</Label>
                           <Input
                             id="otp"
+                            name="otp"
+                            autoComplete="one-time-code"
                             placeholder="0 0 0 0 0 0"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}

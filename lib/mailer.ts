@@ -31,3 +31,59 @@ export async function sendOtpEmail(to: string, otp: string) {
 
   return await transporter.sendMail(mailOptions);
 }
+
+export async function sendAdminNotification(adminEmail: string, reportDetails: { title: string, location: string, reporter: string, description: string }) {
+  const mailOptions = {
+    from: `"${process.env.MAIL_FROM_NAME || "Laporin"}" <${process.env.MAIL_FROM_ADDRESS}>`,
+    to: adminEmail,
+    subject: "🔔 Laporan Baru Masuk - SICEPU",
+    html: `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #eef2f6; border-radius: 24px; background-color: #ffffff; color: #1a1a1a;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="background-color: #0070f3; color: white; width: 60px; height: 60px; line-height: 60px; border-radius: 18px; display: inline-block; font-size: 24px; font-weight: bold;">S</div>
+          <h2 style="margin-top: 15px; color: #1a1a1a; font-size: 24px; letter-spacing: -0.5px;">Notifikasi SICEPU</h2>
+        </div>
+        
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 25px; margin-bottom: 30px;">
+          <h3 style="margin-top: 0; color: #0070f3; font-size: 18px;">📋 Detail Laporan Terbaru</h3>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;" />
+          
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px; width: 30%;">Judul</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600;">: ${reportDetails.title}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Lokasi</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600;">: ${reportDetails.location}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Pelapor</td>
+              <td style="padding: 8px 0; color: #1e293b; font-size: 14px; font-weight: 600;">: ${reportDetails.reporter}</td>
+            </tr>
+          </table>
+          
+          <div style="margin-top: 20px;">
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 8px;">Deskripsi:</p>
+            <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; font-size: 14px; color: #334155; line-height: 1.6;">
+              ${reportDetails.description}
+            </div>
+          </div>
+        </div>
+        
+        <div style="text-align: center;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin" style="background-color: #0070f3; color: white; padding: 16px 32px; text-decoration: none; border-radius: 14px; font-weight: bold; font-size: 14px; display: inline-block; box-shadow: 0 10px 15px -3px rgba(0, 112, 243, 0.3);">
+            Buka Dashboard Admin
+          </a>
+        </div>
+        
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 40px;">
+          Ini adalah pesan otomatis dari sistem SICEPU.<br/>
+          &copy; 2024 SICEPU. Semua hak dilindungi.
+        </p>
+      </div>
+    `,
+  };
+
+  return await transporter.sendMail(mailOptions);
+}

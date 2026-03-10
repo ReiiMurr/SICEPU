@@ -26,6 +26,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ComplaintDetail } from "@/components/complaint-detail";
 
 function ReportImageGallery({ images, title }: { images: string[], title: string }) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -91,7 +92,10 @@ export default function LaporanPublikPage() {
     const checkUser = async () => {
       const supabase = getSupabaseClient();
       const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      if (user) {
+        const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+        setUser({ ...user, profile });
+      }
     };
 
     const fetchAllReports = async () => {
@@ -153,13 +157,38 @@ export default function LaporanPublikPage() {
     router.push("/");
   };
 
+  const handleShare = async () => {
+    if (!selectedReport) return;
+    
+    const shareData = {
+        title: `Laporan: ${selectedReport.title}`,
+        text: `Detail Laporon SICEPU:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+        url: window.location.origin + `/laporan?id=${selectedReport.id}`
+    };
+
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            console.error("Error sharing:", err);
+        }
+    } else {
+        try {
+            await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}\n\nLink: ${shareData.url}`);
+            alert("Detail laporan telah disalin ke clipboard!");
+        } catch (err) {
+            console.error("Error copying:", err);
+        }
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background selection:bg-primary/10 selection:text-primary">
       <header className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300 px-4 py-4 md:px-10 lg:px-20",
+        "sticky top-0 z-[100] w-full transition-all duration-300 px-4 py-4 md:px-10 lg:px-20",
         isScrolled ? "glass py-3 shadow-premium border-b border-border/50" : "bg-background border-b border-border"
       )}>
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
+       <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
               <Mountain size={18} />
@@ -189,7 +218,7 @@ export default function LaporanPublikPage() {
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-inner">
                     <User size={16} />
                   </div>
-                  <span className="text-xs font-bold capitalize">{user.user_metadata?.full_name || user.email?.split("@")[0]}</span>
+                  <span className="text-xs font-bold capitalize">{user.profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0]}</span>
                 </motion.button>
                 <AnimatePresence>
                   {isProfileOpen && (
@@ -229,6 +258,8 @@ export default function LaporanPublikPage() {
                   <div className="relative flex-1 max-w-xl group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={20} />
                     <input
+                      id="search-reports"
+                      name="search-reports"
                       type="text"
                       placeholder="Cari kata kunci, lokasi, atau judul..."
                       value={searchQuery}
@@ -280,7 +311,7 @@ export default function LaporanPublikPage() {
                           layout
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          onClick={() => { setSelectedReport(report); window.scrollTo(0, 0); }}
+                          onClick={() => { setSelectedReport(report); window.scrollTo({ top: 0, behavior: 'instant' }); }}
                           className="group cursor-pointer bg-card border border-border rounded-lg overflow-hidden transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_45px_100px_-25px_rgba(0,0,0,0.2)] hover:border-primary/40 transition-all duration-300"
                         >
                           <div className="aspect-[16/10] overflow-hidden">
@@ -318,86 +349,20 @@ export default function LaporanPublikPage() {
               </section>
             </motion.div>
           ) : (
-            <motion.div key="detail" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="mx-auto max-w-5xl px-4 py-24">
+            <motion.div key="detail" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="mx-auto max-w-4xl px-4 py-20">
               <button
-                onClick={() => { setSelectedReport(null); window.scrollTo(0, 0); }}
+                onClick={() => { setSelectedReport(null); window.scrollTo({ top: 0, behavior: 'instant' }); }}
                 className="group mb-12 flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors"
               >
                 <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                 Kembali ke Daftar
               </button>
 
-              <div className="bg-card border border-border rounded-lg overflow-hidden shadow-premium">
-                <div className="aspect-video w-full overflow-hidden">
-                  {(() => {
-                    const images = selectedReport.image ? (selectedReport.image.startsWith("[") ? JSON.parse(selectedReport.image) : [selectedReport.image]) : ["https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"];
-                    return <ReportImageGallery images={images} title={selectedReport.title} />;
-                  })()}
-                </div>
-                <div className="p-10 md:p-20">
-                  <div className="flex flex-wrap items-center gap-4 mb-10 pb-10 border-b border-border">
-                    <span className={cn(
-                      "px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest border",
-                      selectedReport.status?.toLowerCase() === "selesai" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
-                      selectedReport.status?.toLowerCase() === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-blue-50 text-blue-600 border-blue-200"
-                    )}>
-                      Status: {selectedReport.status || "Baru"}
-                    </span>
-                    <div className="flex items-center gap-2 text-muted-foreground font-bold text-sm bg-muted/50 px-6 py-2 rounded-lg">
-                      <Calendar size={18} className="text-primary" />
-                      {new Date(selectedReport.date || selectedReport.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </div>
-                  </div>
-                  
-                  <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-foreground mb-12">{selectedReport.title}</h1>
-                  
-                  <div className="space-y-12">
-                     <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-muted-foreground border-l-8 border-primary pl-10">
-                      {selectedReport.description}
-                    </p>
-                    
-                    <div className="grid sm:grid-cols-2 gap-6">
-                      <div className="bg-muted px-8 py-6 rounded-lg flex items-center gap-4">
-                        <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary group transition-all">
-                          <MapPin size={24} />
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1">Lokasi Laporan</p>
-                          <p className="text-lg font-bold">{selectedReport.location}</p>
-                        </div>
-                      </div>
-                      <div className="bg-muted px-8 py-6 rounded-lg flex items-center gap-4">
-                        <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary group transition-all">
-                          <Clock size={24} />
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1">Terakhir Diperbarui</p>
-                          <p className="text-lg font-bold">Baru saja</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-10 bg-primary/5 rounded-[2.5rem] border border-primary/10">
-                      <h4 className="flex items-center gap-3 font-bold text-xl mb-4">
-                        <Activity className="text-primary" size={24} />
-                        Catatan Transparansi
-                      </h4>
-                      <p className="text-muted-foreground leading-relaxed">
-                        Data ini disajikan secara terbuka untuk mendukung tata kelola pemerintahan desa yang bersih. Informasi telah divalidasi oleh tim admin lapangan SICEPU.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-20 pt-10 border-t border-border flex flex-wrap gap-6">
-                    <button onClick={() => { setSelectedReport(null); window.scrollTo(0, 0); }} className="px-12 py-5 bg-primary text-white font-bold rounded-lg shadow-premium shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
-                      Selesai Membaca
-                    </button>
-                    <button className="px-12 py-5 bg-card border border-border font-bold rounded-lg flex items-center gap-2 hover:bg-muted transition-all text-muted-foreground hover:text-foreground">
-                      <Share2 size={20} /> Bagikan Laporan
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <ComplaintDetail 
+                report={selectedReport} 
+                onClose={() => { setSelectedReport(null); window.scrollTo({ top: 0, behavior: 'instant' }); }} 
+                onShare={handleShare}
+              />
             </motion.div>
           )}
         </AnimatePresence>

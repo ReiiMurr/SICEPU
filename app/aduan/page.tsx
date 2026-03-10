@@ -28,6 +28,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ComplaintDetail } from "@/components/complaint-detail";
 
 function ReportImageGallery({ images, title }: { images: string[], title: string }) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -95,7 +96,10 @@ export default function LaporankuPage() {
                     return;
                 }
                 
-                setUser(user);
+                if (user) {
+                  const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+                  setUser({ ...user, profile });
+                }
 
                 const { data, error } = await supabase
                     .from("complaints")
@@ -129,6 +133,31 @@ export default function LaporankuPage() {
         router.push("/login");
     };
 
+    const handleShare = async () => {
+        if (!selectedReport) return;
+        
+        const shareData = {
+            title: `Laporanku: ${selectedReport.title}`,
+            text: `Detail Laporanku di SICEPU:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+            url: window.location.origin + `/laporan?id=${selectedReport.id}`
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.error("Error sharing:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}\n\nLink: ${shareData.url}`);
+                alert("Detail laporan telah disalin ke clipboard!");
+            } catch (err) {
+                console.error("Error copying:", err);
+            }
+        }
+    };
+
     const getStatusConfig = (status: string) => {
         const s = status?.toLowerCase();
         if (s === 'selesai') return { color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", icon: <CheckCircle size={14} /> };
@@ -140,8 +169,8 @@ export default function LaporankuPage() {
     return (
         <div className="flex min-h-screen flex-col bg-background selection:bg-primary/10">
             {/* Header */}
-            <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md px-4 py-4 md:px-10 lg:px-20">
-                <div className="mx-auto flex max-w-7xl items-center justify-between">
+            <header className="sticky top-0 z-[100] w-full border-b border-border bg-background/80 backdrop-blur-md px-4 py-4 md:px-10 lg:px-20">
+               <div className="mx-auto flex max-w-7xl items-center justify-between">
                     <Link href="/" className="flex items-center gap-3 group">
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
                             <Mountain size={18} />
@@ -171,7 +200,7 @@ export default function LaporankuPage() {
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-inner">
                                         <User size={16} />
                                     </div>
-                                    <span className="text-xs font-bold capitalize">{user.user_metadata?.full_name || user.email?.split("@")[0]}</span>
+                                    <span className="text-xs font-bold capitalize">{user.profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0]}</span>
                                 </motion.button>
                                 <AnimatePresence>
                                     {isProfileOpen && (
@@ -241,7 +270,7 @@ export default function LaporankuPage() {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: idx * 0.05 }}
-                                        onClick={() => { setSelectedReport(complaint); window.scrollTo(0, 0); }}
+                                        onClick={() => { setSelectedReport(complaint); window.scrollTo({ top: 0, behavior: 'instant' }); }}
                                         className="group relative flex flex-col md:flex-row items-start md:items-center gap-8 rounded-lg border border-border bg-card p-8 cursor-pointer transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_45px_100px_-25px_rgba(0,0,0,0.2)] hover:border-primary/40 transition-all duration-300"
                                     >
                                         <div className="flex-1 space-y-4">
@@ -279,86 +308,20 @@ export default function LaporankuPage() {
                     )}
                   </motion.div>
                 ) : (
-                  <motion.div key="detail" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="mx-auto max-w-5xl">
+                  <motion.div key="detail" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="mx-auto max-w-4xl">
                     <button
-                      onClick={() => { setSelectedReport(null); window.scrollTo(0, 0); }}
+                      onClick={() => { setSelectedReport(null); window.scrollTo({ top: 0, behavior: 'instant' }); }}
                       className="group mb-12 flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors"
                     >
                       <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                       Kembali ke Daftar
                     </button>
 
-                    <div className="bg-card border border-border rounded-lg overflow-hidden shadow-premium">
-                      <div className="aspect-video w-full overflow-hidden">
-                        {(() => {
-                          const images = selectedReport.image ? (selectedReport.image.startsWith("[") ? JSON.parse(selectedReport.image) : [selectedReport.image]) : ["https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"];
-                          return <ReportImageGallery images={images} title={selectedReport.title} />;
-                        })()}
-                      </div>
-                      <div className="p-10 md:p-20">
-                        <div className="flex flex-wrap items-center gap-4 mb-10 pb-10 border-b border-border">
-                          <span className={cn(
-                            "px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest border",
-                            selectedReport.status?.toLowerCase() === "selesai" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
-                            selectedReport.status?.toLowerCase() === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-blue-50 text-blue-600 border-blue-200"
-                          )}>
-                            Status: {selectedReport.status || "Baru"}
-                          </span>
-                          <div className="flex items-center gap-2 text-muted-foreground font-bold text-sm bg-muted/50 px-6 py-2 rounded-lg">
-                            <Calendar size={18} className="text-primary" />
-                            {new Date(selectedReport.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </div>
-                        </div>
-                        
-                        <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-foreground mb-12">{selectedReport.title}</h1>
-                        
-                        <div className="space-y-12">
-                           <p className="text-xl md:text-2xl font-medium leading-relaxed italic text-muted-foreground border-l-8 border-primary pl-10">
-                            {selectedReport.description}
-                          </p>
-                          
-                          <div className="grid sm:grid-cols-2 gap-6">
-                            <div className="bg-muted px-8 py-6 rounded-lg flex items-center gap-4">
-                              <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                                <MapPin size={24} />
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1">Lokasi Kejadian</p>
-                                <p className="text-lg font-bold">{selectedReport.location}</p>
-                              </div>
-                            </div>
-                            <div className="bg-muted px-8 py-6 rounded-lg flex items-center gap-4">
-                              <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                                <Clock size={24} />
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1">Terakhir Diperbarui</p>
-                                <p className="text-lg font-bold">Baru saja</p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="p-10 bg-primary/5 rounded-lg border border-primary/10">
-                            <h4 className="flex items-center gap-3 font-bold text-xl mb-4">
-                              <Activity className="text-primary" size={24} />
-                              Progres Penanganan
-                            </h4>
-                            <p className="text-muted-foreground leading-relaxed">
-                              Laporan Anda sedang dalam tahap peninjauan oleh tim admin SICEPU. Anda akan menerima notifikasi jika ada perubahan status atau kebutuhan informasi tambahan.
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="mt-20 pt-10 border-t border-border flex flex-wrap gap-6">
-                          <button onClick={() => { setSelectedReport(null); window.scrollTo(0, 0); }} className="px-12 py-5 bg-primary text-white font-bold rounded-lg shadow-premium shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
-                            Selesai Membaca
-                          </button>
-                          <button className="px-12 py-5 bg-card border border-border font-bold rounded-lg flex items-center gap-2 hover:bg-muted transition-all text-muted-foreground hover:text-foreground">
-                            <Share2 size={20} /> Bagikan Laporan
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                    <ComplaintDetail 
+                      report={selectedReport} 
+                      onClose={() => { setSelectedReport(null); window.scrollTo({ top: 0, behavior: 'instant' }); }} 
+                      onShare={handleShare}
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>

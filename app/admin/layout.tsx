@@ -39,6 +39,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const notifRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -53,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             // Role check
             const { data: profile } = await supabase
                 .from("profiles")
-                .select("role")
+                .select("role, full_name")
                 .eq("id", user.id)
                 .maybeSingle();
 
@@ -64,12 +67,70 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 return;
             }
 
-            setUser(user);
+            setUser({ ...user, profile });
             setLoading(false);
         };
 
         checkAuth();
     }, [router]);
+
+    // Notifications & Realtime Logic
+    useEffect(() => {
+        const getReadIds = (): string[] => {
+            try {
+                const stored = localStorage.getItem('admin_read_notifs');
+                return stored ? JSON.parse(stored) : [];
+            } catch { return []; }
+        };
+
+        const fetchNewReports = async () => {
+            const supabase = getSupabaseClient();
+            const { data } = await supabase
+                .from('complaints')
+                .select('*')
+                .eq('status', 'baru')
+                .order('created_at', { ascending: false })
+                .limit(10);
+            
+            if (data) {
+                const readIds = getReadIds();
+                const unreadNotifs = data.filter((n: any) => !readIds.includes(n.id));
+                setNotifications(unreadNotifs.slice(0, 5));
+            }
+        };
+
+        fetchNewReports();
+
+        const supabase = getSupabaseClient();
+        const channel = supabase
+            .channel('admin-notifs')
+            .on('postgres_changes', { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'complaints' 
+            }, (payload) => {
+                const readIds = getReadIds();
+                if (!readIds.includes(payload.new.id)) {
+                    setNotifications(prev => [payload.new, ...prev].slice(0, 5));
+                }
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
+
+    // Handle Click Outside for Notifications
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+                setIsNotifOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Update sidebars state on window resize
     useEffect(() => {
@@ -171,7 +232,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         </div>
                         {(isSidebarOpen || isMobileMenuOpen) && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-hidden">
-                                <p className="text-sm font-bold truncate max-w-[100px]">{user.email?.split('@')[0]}</p>
+                                <p className="text-sm font-bold truncate max-w-[100px]">{user.profile?.full_name || user.email?.split('@')[0]}</p>
                                 <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Administrator</p>
                             </motion.div>
                         )}
@@ -282,10 +343,106 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             </div>
                         </div>
                         <div className="flex items-center gap-6">
-                            <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-orange-500/10 text-orange-600 border border-orange-500/20">
-                                <Bell size={18} className="animate-bounce" />
-                                <span className="text-[10px] font-semibold uppercase tracking-widest whitespace-nowrap">3 Alert Baru</span>
+                            {/* Real-time Notification Dropdown */}
+                            <div className="relative" ref={notifRef}>
+                                <button
+                                    onClick={() => setIsNotifOpen(!isNotifOpen)}
+                                    className={cn(
+                                        "flex items-center gap-3 px-4 py-2.5 rounded-2xl border transition-all duration-300",
+                                        notifications.length > 0 
+                                            ? "bg-orange-500/10 text-orange-600 border-orange-500/20 hover:bg-orange-500/20" 
+                                            : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                                    )}
+                                >
+                                    <div className="relative">
+                                        <Bell size={18} className={cn(notifications.length > 0 && "animate-bounce")} />
+                                        {notifications.length > 0 && (
+                                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-orange-500"></span>
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">
+                                        {notifications.length > 0 ? `${notifications.length} Alert Baru` : "Tidak Ada Alert"}
+                                    </span>
+                                </button>
+
+                                <AnimatePresence>
+                                    {isNotifOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute right-0 mt-3 w-[360px] origin-top-right rounded-[2rem] border border-border bg-card p-4 shadow-2xl backdrop-blur-3xl z-[100]"
+                                        >
+                                            <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 mb-4">
+                                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Notifikasi Laporan</h3>
+                                                <span className="px-2 py-0.5 rounded-full bg-orange-500/10 text-[9px] font-bold text-orange-600 uppercase">Baru</span>
+                                            </div>
+
+                                            <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                                {notifications.length > 0 ? (
+                                                    notifications.map((notif, i) => (
+                                                        <Link 
+                                                            key={notif.id || i} 
+                                                            href="/admin/reports"
+                                                            onClick={() => {
+                                                                setIsNotifOpen(false);
+                                                                // Simpan ke localStorage agar tidak muncul lagi saat refresh
+                                                                try {
+                                                                    const stored = localStorage.getItem('admin_read_notifs');
+                                                                    const readIds = stored ? JSON.parse(stored) : [];
+                                                                    if (!readIds.includes(notif.id)) {
+                                                                        readIds.push(notif.id);
+                                                                        localStorage.setItem('admin_read_notifs', JSON.stringify(readIds));
+                                                                    }
+                                                                } catch (e) { console.error("LS Error:", e); }
+                                                                
+                                                                // Update state lokal
+                                                                setNotifications(prev => prev.filter(n => n.id !== notif.id));
+                                                            }}
+                                                        >
+                                                            <div className="flex flex-col gap-1 p-4 rounded-2xl hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all group">
+                                                                <div className="flex items-center justify-between">
+                                                                    <p className="text-sm font-bold truncate pr-4 group-hover:text-primary transition-colors">{notif.title || "Laporan Tanpa Judul"}</p>
+                                                                    <span className="text-[9px] font-bold text-muted-foreground/60 whitespace-nowrap">
+                                                                        {new Date(notif.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-[11px] text-muted-foreground line-clamp-1">{notif.description}</p>
+                                                                <div className="flex items-center gap-1.5 mt-2">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                                                                    <p className="text-[9px] font-black uppercase tracking-widest text-orange-600">{notif.location}</p>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    ))
+                                                ) : (
+                                                    <div className="py-12 flex flex-col items-center justify-center text-center opacity-50">
+                                                        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4 text-muted-foreground">
+                                                            <Bell size={20} />
+                                                        </div>
+                                                        <p className="text-xs font-bold uppercase tracking-widest">Semua Terpantau</p>
+                                                        <p className="text-[10px] mt-1">Belum ada laporan baru masuk.</p>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {notifications.length > 0 && (
+                                                <Link 
+                                                    href="/admin/reports" 
+                                                    className="block mt-4 text-center py-3 rounded-xl bg-muted/30 hover:bg-primary/10 text-[10px] font-black uppercase tracking-[0.3em] text-primary transition-all"
+                                                    onClick={() => setIsNotifOpen(false)}
+                                                >
+                                                    Lihat Semua Laporan
+                                                </Link>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
+
                             <div className="h-6 w-[1px] bg-border" />
                             <ThemeToggle />
                         </div>
