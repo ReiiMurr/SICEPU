@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 
 type Complaint = {
     id: string;
+    user_id: string;
     created_at: string;
     date?: string;
     title: string;
@@ -33,6 +34,7 @@ type Complaint = {
     image: string | null;
     profiles?: {
         full_name: string | null;
+        email?: string | null;
     };
 };
 
@@ -44,6 +46,9 @@ export default function AdminReportsPage() {
     const [selectedReport, setSelectedReport] = useState<Complaint | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [progressStatus, setProgressStatus] = useState("Diproses");
+    const [progressDesc, setProgressDesc] = useState("");
+    const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 
     useEffect(() => {
         fetchReports();
@@ -54,7 +59,7 @@ export default function AdminReportsPage() {
         const supabase = getSupabaseClient();
         const { data, error } = await supabase
             .from("complaints")
-            .select("*, profiles(full_name)")
+            .select("*, profiles(full_name, email)")
             .order("created_at", { ascending: false });
 
         if (data) setReports(data as any[]);
@@ -73,6 +78,86 @@ export default function AdminReportsPage() {
             if (selectedReport?.id === id) {
                 setSelectedReport(prev => prev ? { ...prev, status: newStatus } : null);
             }
+        }
+    };
+
+    const handleUpdateProgress = async () => {
+        if (!selectedReport || !progressDesc) {
+            alert("Harap isi deskripsi progress!");
+            return;
+        }
+
+        setIsUpdatingProgress(true);
+        const supabase = getSupabaseClient();
+        
+        try {
+            // 1. Update the status in complaints table
+            let mainStatus = "diproses";
+            if (progressStatus.toLowerCase() === "selesai") mainStatus = "selesai";
+            if (progressStatus.toLowerCase() === "ditolak") mainStatus = "ditolak";
+            if (progressStatus.toLowerCase() === "verifikasi") mainStatus = "baru";
+
+            const { error: statusError } = await supabase
+                .from("complaints")
+                .update({ status: mainStatus })
+                .eq("id", selectedReport.id);
+
+            if (statusError) throw statusError;
+
+            // 2. Insert into complaint_progress
+            const { error: progressError } = await supabase
+                .from("complaint_progress")
+                .insert({
+                    complaint_id: selectedReport.id,
+                    status: progressStatus,
+                    description: progressDesc,
+                    admin_name: "ADMIN DESA"
+                });
+
+            if (progressError) throw progressError;
+
+            // 3. Send notification to user
+            try {
+                if (selectedReport.user_id) {
+                    const userProfile = (selectedReport as any).profiles;
+                    const res = await fetch("/api/notify-user", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            userId: selectedReport.user_id,
+                            userEmail: userProfile?.email || null,
+                            reportTitle: selectedReport.title,
+                            reportId: selectedReport.id,
+                            status: progressStatus,
+                            message: progressDesc
+                        }),
+                    });
+                    
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        console.error("Notification API failed:", errorData);
+                        alert("Progress disimpan, tapi GAGAL mengirim notifikasi ke warga: " + (errorData.error || "Unknown error"));
+                    } else {
+            
+                    }
+                } else {
+                    alert("Progress berhasil diperbarui (Warga tidak memiliki ID untuk dinotifikasi).");
+                }
+            } catch (notifyError) {
+                console.error("Failed to notify user:", notifyError);
+            }
+
+            alert("Progress berhasil diperbarui dan warga telah dinotifikasi!");
+            setProgressDesc("");
+            fetchReports();
+            if (selectedReport) {
+                setSelectedReport(prev => prev ? { ...prev, status: mainStatus as "baru" | "diproses" | "selesai" | "ditolak" } : null);
+            }
+        } catch (err: any) {
+            console.error(err);
+            alert("Gagal update progress: " + err.message + "\n\nPastikan tabel 'complaint_progress' sudah dibuat di Supabase.");
+        } finally {
+            setIsUpdatingProgress(false);
         }
     };
 
@@ -98,7 +183,7 @@ export default function AdminReportsPage() {
         
         const shareData = {
             title: `Laporan: ${selectedReport.title}`,
-            text: `Detail Laporon SICEPU:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+            text: `Detail Laporon SiLapor:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
             url: window.location.origin + `/laporan?id=${selectedReport.id}`
         };
 
@@ -200,7 +285,7 @@ export default function AdminReportsPage() {
                                     <span className="text-[9px] font-bold text-slate-400 font-mono">#{report.id.slice(0, 8).toUpperCase()}</span>
                                     <span className={cn(
                                         "px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider border",
-                                        report.status === "baru" ? "bg-blue-50 text-blue-600 border-blue-100" :
+                                        report.status === "baru" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                                             report.status === "diproses" ? "bg-amber-50 text-amber-600 border-amber-100" :
                                                 report.status === "selesai" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                                                     "bg-rose-50 text-rose-600 border-rose-100"
@@ -282,26 +367,53 @@ export default function AdminReportsPage() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Progress Update Form */}
                                     <div className="space-y-4">
-                                        <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-left">Status Operasional</h4>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {(["baru", "diproses", "selesai", "ditolak"] as const).map((s) => (
-                                                <button
-                                                    key={s}
-                                                    onClick={() => updateStatus(selectedReport.id, s)}
-                                                    className={cn(
-                                                        "px-3 py-2.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all border",
-                                                        selectedReport.status === s
-                                                            ? "bg-slate-900 dark:bg-primary border-transparent text-white shadow-sm"
-                                                            : "bg-white dark:bg-slate-900 border-border text-slate-500 hover:border-slate-400"
-                                                    )}
-                                                >
-                                                    {s}
-                                                </button>
-                                            ))}
+                                        <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-left">Update Progress (Terbaru)</h4>
+                                        <div className="bg-slate-50 dark:bg-slate-950 p-6 rounded-xl border border-border space-y-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                <div className="md:col-span-1">
+                                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Jenis Progress</label>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {["Verifikasi", "Diproses", "Selesai", "Ditolak"].map((s) => (
+                                                            <button
+                                                                key={s}
+                                                                onClick={() => setProgressStatus(s)}
+                                                                className={cn(
+                                                                    "px-3 py-1.5 rounded-lg text-[8px] font-bold uppercase tracking-widest transition-all border",
+                                                                    progressStatus === s
+                                                                        ? "bg-primary border-primary text-white shadow-sm"
+                                                                        : "bg-white dark:bg-slate-900 border-border text-slate-500"
+                                                                )}
+                                                            >
+                                                                {s}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="md:col-span-2">
+                                                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Keterangan / Pesan untuk Warga</label>
+                                                    <textarea
+                                                        value={progressDesc}
+                                                        onChange={(e) => setProgressDesc(e.target.value)}
+                                                        placeholder="Contoh: Laporan telah kami terima dan akan segera ditinjau oleh tim teknis di lapangan."
+                                                        className="w-full bg-white dark:bg-slate-900 border border-border rounded-lg p-3 text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all min-h-[100px]"
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-3">
+                                                    <button
+                                                        onClick={handleUpdateProgress}
+                                                        disabled={isUpdatingProgress}
+                                                        className="w-full bg-slate-900 dark:bg-primary text-white py-3 rounded-lg font-bold text-[10px] uppercase tracking-[0.2em] hover:opacity-90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                                                    >
+                                                        {isUpdatingProgress ? <RefreshCw size={14} className="animate-spin" /> : "Simpan & Publikasi Progress"}
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    {/* Documentation Lampiran */}
                                     <div className="space-y-4">
                                         {(() => {
                                             const images = selectedReport.image ?
@@ -310,9 +422,9 @@ export default function AdminReportsPage() {
 
                                             return (
                                                 <>
-                                                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-left">Dokumentasi ({images.length})</h4>
+                                                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 text-left">Dokumentasi Lampiran ({images.length})</h4>
                                                     {images.length > 0 ? (
-                                                        <div className="grid grid-cols-2 gap-3">
+                                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                                             {images.map((img: string, idx: number) => (
                                                                 <a key={idx} href={img} target="_blank" rel="noopener noreferrer" className="relative group rounded-lg overflow-hidden border border-border aspect-video bg-slate-50">
                                                                     <img src={img} alt="Lampiran" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -324,14 +436,13 @@ export default function AdminReportsPage() {
                                                         </div>
                                                     ) : (
                                                         <div className="h-24 rounded-xl border border-dashed border-border flex items-center justify-center text-slate-400 bg-slate-50 dark:bg-slate-900/50">
-                                                            <p className="text-[9px] font-bold uppercase tracking-widest">N/A</p>
+                                                            <p className="text-[9px] font-bold uppercase tracking-widest">Tidak ada lampiran gambar</p>
                                                         </div>
                                                     )}
                                                 </>
                                             );
                                         })()}
                                     </div>
-                                </div>
                             </div>
                         </>
                     ) : (

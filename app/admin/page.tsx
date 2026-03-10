@@ -35,7 +35,7 @@ type Complaint = {
 export default function AdminDashboard() {
   const [time, setTime] = useState(new Date());
   const [stats, setStats] = useState([
-    { label: "Total Laporan", value: "0", trend: "+12%", icon: <BarChart3 size={20} />, status: "total", color: "text-blue-600 bg-blue-50 dark:bg-blue-500/10" },
+    { label: "Total Laporan", value: "0", trend: "+12%", icon: <BarChart3 size={20} />, status: "total", color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" },
     { label: "Menunggu", value: "0", trend: "-5%", icon: <Clock3 size={20} />, status: "baru", color: "text-amber-600 bg-amber-50 dark:bg-amber-500/10" },
     { label: "Selesai", value: "0", trend: "+18%", icon: <CheckCircle2 size={20} />, status: "selesai", color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" },
     { label: "Ditolak", value: "0", trend: "+2%", icon: <XCircle size={20} />, status: "ditolak", color: "text-rose-600 bg-rose-50 dark:bg-rose-500/10" },
@@ -226,7 +226,7 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest leading-none">
                 <span className="text-slate-400">Node</span>
-                <span className="text-slate-600 dark:text-slate-300">SICEPU-01</span>
+                <span className="text-slate-600 dark:text-slate-300">SiLapor-01</span>
               </div>
               <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest leading-none">
                 <span className="text-slate-400">Status</span>
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
                   <td className="px-8 py-5 text-center">
                     <span className={cn(
                       "inline-flex px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border",
-                      report.status === "baru" ? "bg-blue-50 text-blue-600 border-blue-200" :
+                      report.status === "baru" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
                         report.status === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" :
                           report.status === "selesai" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
                             "bg-rose-50 text-rose-600 border-rose-200"
@@ -338,7 +338,7 @@ export default function AdminDashboard() {
                   </div>
                   <span className={cn(
                     "px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest border",
-                    report.status === "baru" ? "bg-blue-500/10 text-blue-600 border-blue-500/20" :
+                    report.status === "baru" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
                       report.status === "diproses" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
                         report.status === "selesai" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
                           "bg-rose-500/10 text-rose-600 border-rose-500/20"

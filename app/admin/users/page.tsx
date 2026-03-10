@@ -94,7 +94,7 @@ export default function AdminUsersPage() {
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-border flex items-center gap-5 shadow-sm">
-                    <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-500 flex items-center justify-center border border-blue-100 dark:border-blue-500/20">
+                    <div className="w-12 h-12 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
                         <Users size={24} />
                     </div>
                     <div>
@@ -170,7 +170,7 @@ export default function AdminUsersPage() {
                                     <td className="px-6 py-4">
                                         <span className={cn(
                                             "inline-flex px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest border",
-                                            u.role === "admin" ? "bg-indigo-50 text-indigo-600 border-indigo-100" :
+                                            u.role === "admin" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                                                 u.role === "petugas" ? "bg-amber-50 text-amber-600 border-amber-100" :
                                                     "bg-slate-50 text-slate-500 border-slate-200"
                                         )}>

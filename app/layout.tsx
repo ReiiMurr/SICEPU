@@ -13,8 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SICEPU",
+  title: "SiLapor",
   description: "Website laporan pengaduan masyarakat",
+  icons: {
+    icon: "/images/logolaporin.png",
+    apple: "/images/logolaporin.png",
+  },
 };
 
 export default function RootLayout({

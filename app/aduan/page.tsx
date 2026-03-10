@@ -11,7 +11,6 @@ import {
   Calendar, 
   ArrowRight, 
   Search,
-  Mountain,
   User,
   LogOut,
   History,
@@ -29,6 +28,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ComplaintDetail } from "@/components/complaint-detail";
+import { NotificationBell } from "@/components/notification-bell";
 
 function ReportImageGallery({ images, title }: { images: string[], title: string }) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -138,7 +138,7 @@ export default function LaporankuPage() {
         
         const shareData = {
             title: `Laporanku: ${selectedReport.title}`,
-            text: `Detail Laporanku di SICEPU:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+            text: `Detail Laporanku di SiLapor:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
             url: window.location.origin + `/laporan?id=${selectedReport.id}`
         };
 
@@ -163,19 +163,19 @@ export default function LaporankuPage() {
         if (s === 'selesai') return { color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", icon: <CheckCircle size={14} /> };
         if (s === 'diproses') return { color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", icon: <Clock size={14} /> };
         if (s === 'ditolak') return { color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", icon: <AlertCircle size={14} /> };
-        return { color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", icon: <Activity size={14} /> };
+        return { color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", icon: <Activity size={14} /> };
     };
 
     return (
         <div className="flex min-h-screen flex-col bg-background selection:bg-primary/10">
             {/* Header */}
             <header className="sticky top-0 z-[100] w-full border-b border-border bg-background/80 backdrop-blur-md px-4 py-4 md:px-10 lg:px-20">
-               <div className="mx-auto flex max-w-7xl items-center justify-between">
+               <div className="mx-auto flex max-w-6xl items-center justify-between">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                            <Mountain size={18} />
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent group-hover:scale-110 transition-transform">
+                            <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">SICEPU</h1>
+                        <h1 className="text-xl font-bold tracking-tight">SiLapor</h1>
                     </Link>
 
                     <nav className="hidden items-center gap-1 lg:flex">
@@ -190,34 +190,38 @@ export default function LaporankuPage() {
                         <div className="h-6 w-px bg-border mx-2" />
                         
                         {user && (
-                            <div className="relative" ref={dropdownRef}>
-                                <motion.button
-                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="flex items-center gap-3 rounded-full border border-border bg-card p-1 pr-4 shadow-sm hover:border-primary/30 transition-all"
-                                >
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-inner">
-                                        <User size={16} />
-                                    </div>
-                                    <span className="text-xs font-bold capitalize">{user.profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0]}</span>
-                                </motion.button>
-                                <AnimatePresence>
-                                    {isProfileOpen && (
-                                        <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute right-0 mt-3 w-48 origin-top-right rounded-lg border border-border bg-card p-2 shadow-premium backdrop-blur-xl">
-                                            <button onClick={handleLogout} className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-500/10 transition-colors">
-                                                <LogOut size={18} /> Keluar Akun
-                                            </button>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                            <>
+                                <NotificationBell />
+                                <div className="h-6 w-px bg-border mx-2" />
+                                <div className="relative" ref={dropdownRef}>
+                                    <motion.button
+                                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="flex items-center gap-3 rounded-full border border-border bg-card p-1 pr-4 shadow-sm hover:border-primary/30 transition-all"
+                                    >
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-inner">
+                                            <User size={16} />
+                                        </div>
+                                        <span className="text-xs font-bold capitalize">{user.profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0]}</span>
+                                    </motion.button>
+                                    <AnimatePresence>
+                                        {isProfileOpen && (
+                                            <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute right-0 mt-3 w-48 origin-top-right rounded-lg border border-border bg-card p-2 shadow-premium backdrop-blur-xl">
+                                                <button onClick={handleLogout} className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-500/10 transition-colors">
+                                                    <LogOut size={18} /> Keluar Akun
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
             </header>
 
-            <main className="flex-1 container max-w-7xl mx-auto px-4 py-20">
+            <main className="flex-1 container max-w-6xl mx-auto px-6 lg:px-8 py-20">
               <AnimatePresence mode="wait">
                 {!selectedReport ? (
                   <motion.div key="list" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>

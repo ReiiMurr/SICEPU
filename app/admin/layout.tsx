@@ -12,15 +12,14 @@ import {
     LayoutDashboard,
     ClipboardList,
     Users,
-    Map,
     Settings,
     LogOut,
     Menu,
     X,
     Bell,
-    Mountain,
     ChevronLeft,
     ChevronRight,
+    Map,
     Search
 } from "lucide-react";
 
@@ -168,8 +167,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex h-full flex-col p-5">
             {/* Logo Section */}
             <div className="mb-8 flex items-center gap-3 px-2">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm dark:bg-primary">
-                    <Mountain size={20} />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-transparent">
+                    <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
                 </div>
                 {(isSidebarOpen || isMobileMenuOpen) && (
                     <motion.div
@@ -177,7 +176,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         animate={{ opacity: 1 }}
                         className="overflow-hidden"
                     >
-                        <h1 className="whitespace-nowrap text-base font-bold tracking-tight text-slate-900 dark:text-white">SICEPU Admin</h1>
+                        <h1 className="whitespace-nowrap text-base font-bold tracking-tight text-slate-900 dark:text-white">SiLapor Admin</h1>
                         <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">Digital Portal</p>
                     </motion.div>
                 )}
@@ -257,8 +256,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Mobile Nav Top */}
             <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-background/80 backdrop-blur-lg border-b border-border lg:hidden">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
-                        <Mountain size={20} />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-transparent">
+                        <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
                     </div>
                     <div>
                         <h2 className="text-sm font-bold tracking-tight leading-none uppercase">Laporin</h2>
@@ -360,7 +359,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                         >
                                             <div className="flex items-center justify-between px-2 py-2 border-b border-border/50 mb-3">
                                                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Notifikasi Laporan</h3>
-                                                <span className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-500/10 text-[9px] font-bold text-blue-600 uppercase">Baru</span>
+                                                <span className="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-500/10 text-[9px] font-bold text-emerald-600 uppercase">Baru</span>
                                             </div>
 
                                             <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar">

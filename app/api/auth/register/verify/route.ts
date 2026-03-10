@@ -40,18 +40,36 @@ export async function POST(req: Request) {
         });
 
         if (authError) {
+          // Jika user sudah terdaftar, kita anggap auth sukses (mungkin dari attempt sebelumnya yang terputus)
+          if (authError.message.toLowerCase().includes("already registered") || authError.status === 422) {
+            // Lanjutkan saja untuk membereskan profile dan hapus OTP
+          } else {
             return NextResponse.json({ error: authError.message }, { status: 500 });
+          }
         }
 
         // 4. Masukkan data ke tabel profiles (DATABASE)
-        if (authData.user) {
+        // Kita butuh ID user. Jika authData.user ada (baru daftar), gunakan itu.
+        // Jika tidak ada (karena sudah terdaftar), kita coba ambil ID-nya dari login sementara 
+        // atau biarkan logic upsert yang mencari.
+        let userId = authData?.user?.id;
+        
+        if (!userId) {
+          // Coba cari profil yang sudah ada berdasarkan email atau lewat auth login singkat
+          const { data: existingUser } = await supabase.from("profiles").select("id").eq("id", authData?.user?.id).maybeSingle();
+          userId = existingUser?.id;
+        }
+
+        if (userId || authData.user) {
+            const finalUserId = userId || authData.user?.id;
             const role = email === "laporin.service@gmail.com" ? "admin" : "masyarakat";
             const { error: profileError } = await supabase
                 .from("profiles")
                 .upsert({
-                    id: authData.user.id,
+                    id: finalUserId,
                     role: role,
                     full_name: fullName || email.split('@')[0],
+                    email: email,
                 }, { onConflict: 'id' });
 
             if (profileError) {

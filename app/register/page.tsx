@@ -34,6 +34,30 @@ function RegisterForm() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
+  const [init, setInit] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!init) {
+      const stepParam = searchParams.get("step");
+      const emailParam = searchParams.get("email");
+      if (stepParam === "otp" && emailParam) {
+        setEmail(emailParam);
+        setStep("otp");
+        
+        // Coba ambil password yang disimpan saat login tadi
+        const savedPwd = sessionStorage.getItem("pending_signup_password");
+        if (savedPwd) {
+          setPassword(savedPwd);
+          // sessionStorage.removeItem("pending_signup_password"); // Kita tahan dulu sampai berhasil verif
+        }
+        
+        // Ambil nama jika ada
+        const savedName = sessionStorage.getItem("pending_signup_name");
+        if (savedName) setFullName(savedName);
+      }
+      setInit(true);
+    }
+  }, [searchParams, init]);
 
   async function onSendOtp(e: React.FormEvent) {
     e.preventDefault();
@@ -81,6 +105,11 @@ function RegisterForm() {
       }
 
       setMessage(data.message);
+      
+      // Bersihkan session storage setelah berhasil
+      sessionStorage.removeItem("pending_signup_password");
+      sessionStorage.removeItem("pending_signup_name");
+
       setTimeout(() => {
         router.push(`/login${redirectPath !== "/" ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`);
       }, 2000);
@@ -92,195 +121,124 @@ function RegisterForm() {
   }
 
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden bg-background font-display selection:bg-primary/20">
+    <div className="relative min-h-dvh w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 font-display flex items-center justify-center p-4">
       {/* Background Decor */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute -top-[10%] -right-[10%] h-[50%] w-[50%] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute -bottom-[10%] -left-[10%] h-[50%] w-[50%] rounded-full bg-primary/10 blur-[120px]" />
+      <div className="absolute inset-0 z-0 opacity-40">
+        <div className="absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-emerald-500/10 blur-[120px]" />
+        <div className="absolute bottom-0 left-0 h-[500px] w-[500px] rounded-full bg-emerald-500/5 blur-[120px]" />
       </div>
 
-      <div className="relative z-10 flex min-h-dvh items-center justify-center p-4">
-        <div className="w-full max-w-[480px]">
-          <PageTransition>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            >
-              <div className="mb-8 flex flex-col items-center">
-                <Link href="/" className="group mb-4 flex flex-col items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-primary text-white shadow-xl shadow-primary/20 transition-transform group-hover:rotate-6">
-                    <UserPlus size={24} />
-                  </div>
-                </Link>
-                <h1 className="text-3xl font-bold tracking-tighter text-foreground">Buat Akun Baru</h1>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mt-2 opacity-60 text-center">Pendaftaran Masyarakat SICEPU</p>
+      <PageTransition>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 w-full max-w-6xl min-h-[700px] bg-white dark:bg-zinc-900 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] rounded-[3rem] overflow-hidden grid grid-cols-1 lg:grid-cols-2"
+        >
+          {/* Image Section (Left) */}
+          <div className="hidden lg:block relative p-8">
+            <div className="h-full w-full rounded-[2.5rem] overflow-hidden relative shadow-2xl">
+              <img src="/images/village_register.png" alt="Masyarakat Desa" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-emerald-950/20 backdrop-brightness-75" />
+              
+              <div className="absolute inset-0 p-12 flex flex-col justify-end text-white">
+                <div className="h-1 w-16 bg-emerald-400 mb-8 rounded-full" />
+                <h3 className="text-4xl font-black leading-tight mb-4">Satu Suara <br />Membangun Bangsa</h3>
+                <p className="text-emerald-50/80 text-lg max-w-sm leading-relaxed">
+                  Jadilah bagian dari transparansi digital desa untuk pelayanan publik yang lebih efisien dan akuntabel.
+                </p>
               </div>
 
-              <Card className="overflow-hidden border-border/40 bg-card/40 shadow-2xl backdrop-blur-3xl rounded-[2.5rem]">
-                <CardContent className="p-8 md:p-10">
-                  <AnimatePresence mode="wait">
-                    {step === "email" ? (
-                      <motion.form
-                        key="email-step"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6"
-                        onSubmit={onSendOtp}
-                      >
-                        <div className="space-y-4">
-                          <div className="space-y-2.5">
-                            <Label htmlFor="fullName" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Nama Lengkap Sesuai KTP</Label>
-                            <div className="relative group">
-                              <UserPlus size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
-                              <Input
-                                id="fullName"
-                                name="fullName"
-                                autoComplete="name"
-                                placeholder="Masukkan nama lengkap kamu"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                                className="h-12 border-transparent bg-muted/30 pl-11 pr-4 font-semibold placeholder:text-muted-foreground/30 focus:border-primary/20 focus:ring-4 focus:ring-primary/5 rounded-2xl transition-all text-foreground"
-                                required
-                              />
-                            </div>
-                          </div>
-                          <div className="space-y-2.5">
-                            <Label htmlFor="email" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Alamat Email Aktif</Label>
-                            <div className="relative group">
-                              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
-                              <Input
-                                id="email"
-                                name="email"
-                                autoComplete="email"
-                                placeholder="nama@email.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                type="email"
-                                className="h-12 border-transparent bg-muted/30 pl-11 pr-4 font-semibold placeholder:text-muted-foreground/30 focus:border-primary/20 focus:ring-4 focus:ring-primary/5 rounded-2xl transition-all text-foreground"
-                                required
-                              />
-                            </div>
-                          </div>
+              {/* Floating Dashboard Elements */}
+              <motion.div 
+                 initial={{ y: 20, opacity: 0 }} 
+                 animate={{ y: 0, opacity: 1 }} 
+                 transition={{ delay: 0.5 }}
+                 className="absolute top-10 left-10 bg-white/10 backdrop-blur-xl border border-white/20 p-6 rounded-3xl shadow-2xl flex items-center gap-4"
+              >
+                <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg">
+                   <CheckCircle className="text-white" size={20} />
+                </div>
+                <div>
+                   <p className="text-[10px] font-black uppercase tracking-widest text-emerald-100">Verified Access</p>
+                   <p className="text-xs font-bold text-white">100% Data Aman</p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
 
-                          <div className="space-y-2.5">
-                            <Label htmlFor="password" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Kata Sandi Baru</Label>
-                            <div className="relative group">
-                              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
-                              <Input
-                                id="password"
-                                name="password"
-                                autoComplete="new-password"
-                                placeholder="Minimal 6 karakter"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                type="password"
-                                className="h-12 border-transparent bg-muted/30 pl-11 pr-4 font-semibold placeholder:text-muted-foreground/30 focus:border-primary/20 focus:ring-4 focus:ring-primary/5 rounded-2xl transition-all text-foreground"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
+          {/* Form Section (Right) */}
+          <div className="flex flex-col p-8 md:p-14 lg:p-20">
+            <div className="mb-auto">
+              <Link href="/" className="inline-flex items-center gap-2 group mb-12">
+                <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                   <img src="/images/logolaporin.png" alt="SiLapor" className="h-8 w-8 object-contain" />
+                </div>
+                <span className="font-extrabold text-2xl tracking-tighter text-foreground">SiLapor</span>
+              </Link>
 
-                        {error && (
-                          <div className="flex items-center gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 text-[10px] font-bold text-rose-600 uppercase tracking-wider">
-                            <AlertCircle size={16} />
-                            {error}
-                          </div>
-                        )}
-
-                        <Button className="h-12 w-full rounded-2xl bg-primary font-bold text-[10px] uppercase tracking-[0.2em] text-white shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all disabled:opacity-50" type="submit" disabled={loading}>
-                          {loading ? "Mengirim Kode OTP..." : "Daftar Sekarang"}
-                        </Button>
-                      </motion.form>
-                    ) : (
-                      <motion.form
-                        key="otp-step"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-8"
-                        onSubmit={onVerifyOtp}
-                      >
-                        <div className="text-center space-y-2">
-                          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold uppercase tracking-widest mb-2">
-                            <MailCheck size={14} />
-                            OTP Terkirim
-                          </div>
-                          <p className="text-xs font-bold text-muted-foreground">Silakan periksa inbox email <span className="text-foreground">{email}</span></p>
-                        </div>
-
-                        <div className="space-y-4">
-                           <Label htmlFor="otp" className="text-center block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Masukkan 6 Digit Kode OTP</Label>
-                          <Input
-                            id="otp"
-                            name="otp"
-                            autoComplete="one-time-code"
-                            placeholder="0 0 0 0 0 0"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                            className="text-center text-3xl font-bold tracking-[0.8rem] bg-muted/30 border-transparent focus:border-primary/50 h-20 rounded-3xl transition-all outline-none text-foreground"
-                            maxLength={6}
-                            required
-                          />
-                        </div>
-
-                        {error && (
-                          <div className="flex items-center gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 text-[10px] font-bold text-rose-600 uppercase tracking-widest">
-                            <AlertCircle size={16} />
-                            {error}
-                          </div>
-                        )}
-
-                        {message && (
-                          <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
-                            <CheckCircle size={16} />
-                            {message}
-                          </div>
-                        )}
-
-                        <div className="space-y-4">
-                          <Button className="h-14 w-full rounded-2xl bg-primary font-bold text-[10px] uppercase tracking-[0.2em] text-white shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all outline-none" type="submit" disabled={loading}>
-                            {loading ? "Memverifikasi..." : "Aktivasi Akun"}
-                          </Button>
-                          <button
-                            type="button"
-                            onClick={() => setStep("email")}
-                            className="w-full text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-2"
-                          >
-                            <PencilLine size={14} />
-                            Ganti Email
-                          </button>
-                        </div>
-                      </motion.form>
-                    )}
-                  </AnimatePresence>
-
-                  <div className="mt-10 py-6 border-t border-border/40 text-center">
-                    <p className="text-xs font-bold text-muted-foreground">
-                      Sudah menjadi bagian dari kami?{" "}
-                      <Link className="font-black text-primary hover:opacity-80 transition-all decoration-2 underline-offset-4 hover:underline" href="/login">
-                        Masuk Sekarang
-                      </Link>
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="mt-8 flex justify-center">
-                <Link
-                  className="flex items-center gap-2.5 rounded-2xl border border-border/50 bg-card/20 px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground transition-all hover:bg-card/50 hover:text-foreground hover:shadow-lg"
-                  href="/"
-                >
-                  <ArrowLeft size={16} />
-                  Beranda
-                </Link>
+              <div className="space-y-3 mb-10">
+                <h1 className="text-4xl font-black tracking-tight text-foreground">
+                   {step === "email" ? "Daftar Akun" : "Verifikasi OTP"}
+                </h1>
+                <p className="text-muted-foreground font-medium text-lg">
+                   {step === "email" ? "Silakan isi data diri Anda di bawah ini." : "Masukkan kode yang dikirim ke email Anda."}
+                </p>
               </div>
-            </motion.div>
-          </PageTransition>
-        </div>
-      </div>
+
+              <AnimatePresence mode="wait">
+                {step === "email" ? (
+                  <motion.form key="email-step" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5" onSubmit={onSendOtp}>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">Nama Lengkap</Label>
+                        <div className="relative">
+                          <UserPlus size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+                          <Input id="fullName" name="fullName" autoComplete="name" placeholder="Sesuai KTP" value={fullName} onChange={(e) => setFullName(e.target.value)} className="h-14 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 pl-11 rounded-2xl focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/30 transition-all font-semibold" required />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">Email</Label>
+                        <div className="relative">
+                          <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+                          <Input id="email" name="email" autoComplete="email" placeholder="nama@email.com" value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="h-14 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 pl-11 rounded-2xl focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/30 transition-all font-semibold" required />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password" className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">Kata Sandi</Label>
+                        <div className="relative">
+                          <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+                          <Input id="password" name="password" autoComplete="new-password" placeholder="Minimal 6 karakter" value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="h-14 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 pl-11 rounded-2xl focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/30 transition-all font-semibold" required />
+                        </div>
+                      </div>
+                    </div>
+                    {error && <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-sm font-bold flex items-center gap-3"><AlertCircle size={18} /> {error}</div>}
+                    <Button className="h-14 w-full rounded-2xl bg-emerald-500 text-white font-bold text-lg shadow-xl shadow-emerald-500/20 hover:bg-emerald-600 hover:-translate-y-1 transition-all" type="submit" disabled={loading}>{loading ? "..." : "Lanjutkan"}</Button>
+                  </motion.form>
+                ) : (
+                  <motion.form key="otp-step" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8" onSubmit={onVerifyOtp}>
+                    <div className="p-6 rounded-3xl bg-emerald-50 border border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/10 text-center">
+                       <p className="text-sm font-semibold text-muted-foreground leading-relaxed">Kode verifikasi telah dikirim ke:<br/><span className="text-foreground font-black">{email}</span></p>
+                    </div>
+                    <div className="space-y-4">
+                      <Label htmlFor="otp" className="text-center block text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Kode OTP</Label>
+                      <Input id="otp" name="otp" autoComplete="one-time-code" placeholder="000000" value={otp} onChange={(e) => setOtp(e.target.value)} className="h-20 text-center text-4xl font-black tracking-[1.5rem] border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 rounded-3xl focus:border-emerald-500/50 transition-all outline-none" maxLength={6} required />
+                    </div>
+                    <div className="space-y-4">
+                      <Button className="h-14 w-full rounded-2xl bg-emerald-500 text-white font-bold text-lg shadow-xl shadow-emerald-500/20 hover:bg-emerald-600 transition-all" type="submit" disabled={loading}>{loading ? "..." : "Aktivasi Akun"}</Button>
+                      <button type="button" onClick={() => setStep("email")} className="w-full text-sm font-bold text-muted-foreground hover:text-emerald-500 flex items-center justify-center gap-2"><PencilLine size={16} /> Ganti Email</button>
+                    </div>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="mt-12 text-center border-t border-zinc-100 dark:border-zinc-800 pt-8">
+              <p className="text-sm font-bold text-muted-foreground">Sudah punya akun? <Link href="/login" className="text-emerald-500 hover:underline">Masuk sekarang</Link></p>
+            </div>
+          </div>
+        </motion.div>
+      </PageTransition>
     </div>
   );
 }

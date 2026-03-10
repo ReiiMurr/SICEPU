@@ -25,7 +25,7 @@ import {
 
 export default function AdminSettingsPage() {
     const [settings, setSettings] = useState({
-        siteName: "SICEPU (Sistem Informasi Cerdas Pelayanan Umum)",
+        siteName: "SiLapor (Sistem Informasi Cerdas Pelayanan Umum)",
         notifyEmail: "laporin.service@gmail.com",
         allowPublic: true,
         maintenance: false,
@@ -62,10 +62,10 @@ export default function AdminSettingsPage() {
             if (error) {
                 if (error.code === '42P01') {
                     setSystemLogs([
-                        { action: "Login Admin", user_email: "admin@sicepu.id", created_at: new Date().toISOString(), type: "info" },
-                        { action: "Status Update #LAP-01", user_email: "staff@sicepu.id", created_at: new Date(Date.now() - 3600000).toISOString(), type: "success" },
-                        { action: "Update Profil Desa", user_email: "admin@sicepu.id", created_at: new Date(Date.now() - 7200000).toISOString(), type: "info" },
-                        { action: "Ganti Password", user_email: "admin@sicepu.id", created_at: new Date(Date.now() - 86400000).toISOString(), type: "warning" }
+                        { action: "Login Admin", user_email: "admin@SiLapor.id", created_at: new Date().toISOString(), type: "info" },
+                        { action: "Status Update #LAP-01", user_email: "staff@SiLapor.id", created_at: new Date(Date.now() - 3600000).toISOString(), type: "success" },
+                        { action: "Update Profil Desa", user_email: "admin@SiLapor.id", created_at: new Date(Date.now() - 7200000).toISOString(), type: "info" },
+                        { action: "Ganti Password", user_email: "admin@SiLapor.id", created_at: new Date(Date.now() - 86400000).toISOString(), type: "warning" }
                     ]);
                     return;
                 }
@@ -215,7 +215,7 @@ export default function AdminSettingsPage() {
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2.5">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Nama Portal SICEPU</label>
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Nama Portal SiLapor</label>
                                             <div className="relative">
                                                 <Building2 size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input

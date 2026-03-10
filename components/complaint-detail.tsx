@@ -18,6 +18,7 @@ import {
   X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 type ComplaintDetailProps = {
     report: any;
@@ -43,30 +44,49 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
         if (s === 'selesai') return { label: "Selesai", color: "text-emerald-600 bg-emerald-50 border-emerald-200" };
         if (s === 'diproses') return { label: "Progress", color: "text-amber-600 bg-amber-50 border-amber-200" };
         if (s === 'ditolak') return { label: "Ditolak", color: "text-rose-600 bg-rose-50 border-rose-200" };
-        return { label: "Baru", color: "text-blue-600 bg-blue-50 border-blue-200" };
+        return { label: "Baru", color: "text-emerald-600 bg-emerald-50 border-emerald-200" };
     };
 
     const statusObj = getStatusConfig(report.status);
 
-    // Mock timeline based on status
+    const [progress, setProgress] = React.useState<any[]>([]);
+    const [loadingProgress, setLoadingProgress] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchProgress = async () => {
+            try {
+                const supabase = getSupabaseClient();
+                const { data, error } = await supabase
+                    .from("complaint_progress")
+                    .select("*")
+                    .eq("complaint_id", report.id)
+                    .order("created_at", { ascending: true });
+
+                if (!error && data) {
+                    setProgress(data);
+                } else {
+                    // Fallback to basic timeline if no entries exist
+                    setProgress([
+                        { status: "Laporan Diterima", description: "Aduan telah berhasil dikirim oleh masyarakat dan masuk antrean sistem.", created_at: report.created_at }
+                    ]);
+                }
+            } catch (err) {
+                console.error("Error fetching progress:", err);
+            } finally {
+                setLoadingProgress(false);
+            }
+        };
+
+        fetchProgress();
+    }, [report.id]);
+
     const getTimeline = () => {
-        const steps = [
-            { title: "Laporan Diterima", desc: "Aduan telah berhasil dikirim oleh masyarakat dan masuk antrean sistem.", time: report.created_at, icon: <MessageSquare size={16} />, active: true }
+        if (progress.length > 0) return progress;
+        
+        // Mock fallback if query fails
+        return [
+            { status: "Laporan Diterima", description: "Aduan telah berhasil dikirim oleh masyarakat.", created_at: report.created_at }
         ];
-
-        if (report.status !== "baru") {
-            steps.push({ title: "Verifikasi", desc: "Aduan telah diverifikasi oleh admin SICEPU dan diteruskan ke perangkat desa.", time: report.created_at, icon: <ShieldCheck size={16} />, active: true });
-        }
-
-        if (report.status === "diproses" || report.status === "selesai") {
-            steps.push({ title: "Progress", desc: "Aduan sedang dalam tahap penanganan oleh pihak terkait.", time: report.created_at, icon: <Clock size={16} />, active: true });
-        }
-
-        if (report.status === "selesai") {
-            steps.push({ title: "Selesai", desc: "Laporan dinyatakan selesai. Terima kasih atas partisipasi Anda.", time: report.created_at, icon: <CheckCircle2 size={16} />, active: true });
-        }
-
-        return steps.reverse();
     };
 
     return (
@@ -213,7 +233,9 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                 </div>
                 <div className="p-6 md:p-10 space-y-6">
                     <div className="relative border-l-2 border-primary/20 ml-4 space-y-8 py-2">
-                        {getTimeline().map((step, idx) => (
+                        {loadingProgress ? (
+                            <div className="pl-10 text-xs font-bold text-muted-foreground animate-pulse">Sinkronisasi data progress...</div>
+                        ) : getTimeline().map((step, idx) => (
                             <div key={idx} className="relative pl-10">
                                 {/* Dot */}
                                 <div className="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-white dark:bg-slate-900 border-2 border-primary flex items-center justify-center text-primary z-10">
@@ -222,13 +244,13 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                                 
                                 <div className="p-6 rounded-2xl border border-border bg-card/50 shadow-sm space-y-3">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                        <h4 className="font-bold text-slate-800 dark:text-white uppercase tracking-tight">{step.title}</h4>
+                                        <h4 className="font-bold text-slate-800 dark:text-white uppercase tracking-tight">{step.status}</h4>
                                         <span className="text-[10px] font-bold text-muted-foreground opacity-60">
-                                            {new Date(step.time).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(step.time).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })} WIB
+                                            {new Date(step.created_at).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(step.created_at).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })} WIB
                                         </span>
                                     </div>
-                                    <p className="text-xs font-bold text-primary opacity-80 uppercase tracking-widest">SICEPU SYSTEM</p>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                                    <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{step.admin_name || "SiLapor SYSTEM"}</p>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
                                 </div>
                             </div>
                         ))}

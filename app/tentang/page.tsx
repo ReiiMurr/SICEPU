@@ -3,7 +3,6 @@
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import {
-    Mountain,
     User,
     LogOut
 } from "lucide-react";
@@ -13,6 +12,7 @@ import Link from "next/link";
 import { Footer } from "@/components/footer";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MapSection } from "@/components/map-section";
+import { NotificationBell } from "@/components/notification-bell";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -86,12 +86,12 @@ export default function TentangPage() {
                     className="absolute top-0 left-0 right-0 h-0.5 bg-primary origin-left z-[60]"
                     style={{ scaleX }}
                 />
-                <div className="mx-auto flex max-w-7xl items-center justify-between">
+                <div className="mx-auto flex max-w-6xl items-center justify-between">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                            <Mountain size={18} />
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-transparent group-hover:scale-110 transition-transform">
+                            <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">SICEPU</h1>
+                        <h1 className="text-xl font-bold tracking-tight">SiLapor</h1>
                     </Link>
 
                     <nav className="hidden items-center gap-1 lg:flex">
@@ -104,6 +104,13 @@ export default function TentangPage() {
                     <div className="flex items-center gap-3">
                         <ThemeToggle />
                         <div className="h-6 w-px bg-border mx-2" />
+                        
+                        {user && (
+                            <>
+                                <NotificationBell />
+                                <div className="h-6 w-px bg-border mx-2" />
+                            </>
+                        )}
                         
                         {user ? (
                             <div className="relative" ref={dropdownRef}>
@@ -150,7 +157,7 @@ export default function TentangPage() {
                         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
                     </div>
 
-                    <div className="container relative z-10 mx-auto px-4 max-w-7xl text-center">
+                    <div className="container relative z-10 mx-auto px-6 lg:px-8 max-w-6xl text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -161,10 +168,10 @@ export default function TentangPage() {
                             </span>
                             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-8">
                                 Membangun Desa Melalui <br />
-                                <span className="text-primary italic">Transparansi Digital</span>
+                                <span className="text-[#10b981] italic">Transparansi Digital</span>
                             </h1>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                                SICEPU adalah platform resmi aspirasi dan pengaduan online yang dirancang khusus untuk mempercepat respon pemerintah desa terhadap kebutuhan warga.
+                                SiLapor adalah platform resmi aspirasi dan pengaduan online yang dirancang khusus untuk mempercepat respon pemerintah desa terhadap kebutuhan warga.
                             </p>
                         </motion.div>
                     </div>

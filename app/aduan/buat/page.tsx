@@ -9,7 +9,6 @@ import Link from "next/link";
 import {
     Instagram,
     AlertCircle,
-    Mountain,
     LogOut,
     FileText,
     ShieldCheck,
@@ -36,6 +35,7 @@ import {
 } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/notification-bell";
 
 interface Attachment {
     file: File;
@@ -228,7 +228,7 @@ export default function CreateAduanPage() {
                 }
             }
 
-            const { error: insertError } = await supabase
+            const { data: newComplaint, error: insertError } = await supabase
                 .from("complaints")
                 .insert({
                     user_id: user.id,
@@ -239,13 +239,30 @@ export default function CreateAduanPage() {
                     status: "baru",
                     image: imageUrls.length > 0 ? (imageUrls.length === 1 ? imageUrls[0] : JSON.stringify(imageUrls)) : null,
                     date: formData.date
-                });
+                })
+                .select()
+                .single();
 
             if (insertError) {
                 if (insertError.message.includes("column") && insertError.message.includes("not found")) {
                     throw new Error("Kolom 'date' atau 'image' belum ada di database. Silakan jalankan SQL di Supabase editor.");
                 }
                 throw insertError;
+            }
+
+            // --- Auto-insert initial progress ---
+            if (newComplaint) {
+                try {
+                    await supabase.from("complaint_progress").insert({
+                        complaint_id: newComplaint.id,
+                        status: "Baru",
+                        description: "Laporan telah diteruskan ke Admin",
+                        admin_name: "SiLapor SYSTEM"
+                    });
+                } catch (progressErr) {
+                    console.warn("Failed to insert initial progress entry:", progressErr);
+                    // We continue anyway as the main report was created
+                }
             }
 
             // --- Send Admin Notification ---
@@ -293,17 +310,17 @@ export default function CreateAduanPage() {
         <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors font-display">
             {/* Header */}
             <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
-                <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 lg:px-8">
+                <div className="mx-auto flex h-16 max-w-6xl items-center gap-8 px-6 lg:px-8">
                     {/* Left: Logo */}
                     <div className="flex flex-1 items-center justify-start gap-3">
                         <Link
                             href="/"
                             className="flex items-center gap-3"
                         >
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
-                                <Mountain size={20} />
+                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-transparent">
+                                <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
                             </div>
-                            <h1 className="text-xl font-bold tracking-tight">SICEPU</h1>
+                            <h1 className="text-xl font-bold tracking-tight">SiLapor</h1>
                         </Link>
                     </div>
 
@@ -317,8 +334,17 @@ export default function CreateAduanPage() {
                     </nav>
 
                     {/* Right: Actions */}
-                    <div className="flex flex-1 items-center justify-end gap-4">
+                    <div className="flex flex-1 items-center justify-end gap-1">
                         <ThemeToggle />
+                        <div className="h-6 w-px bg-border/20 mx-1 hidden sm:block" />
+                        
+                        {user && (
+                            <>
+                                <NotificationBell />
+                                <div className="h-6 w-px bg-border/20 mx-1 hidden sm:block" />
+                            </>
+                        )}
+
                         {user ? (
                             <div className="relative" ref={dropdownRef}>
                                 <motion.button

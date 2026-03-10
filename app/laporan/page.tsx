@@ -8,7 +8,6 @@ import {
   MapPin, 
   Calendar, 
   Filter, 
-  Mountain,
   ArrowLeft,
   ArrowRight,
   Activity,
@@ -24,9 +23,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import { Footer } from "@/components/footer";
+import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ComplaintDetail } from "@/components/complaint-detail";
+import { Footer } from "@/components/footer";
 
 function ReportImageGallery({ images, title }: { images: string[], title: string }) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -162,7 +162,7 @@ export default function LaporanPublikPage() {
     
     const shareData = {
         title: `Laporan: ${selectedReport.title}`,
-        text: `Detail Laporon SICEPU:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+        text: `Detail Laporon SiLapor:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
         url: window.location.origin + `/laporan?id=${selectedReport.id}`
     };
 
@@ -185,15 +185,15 @@ export default function LaporanPublikPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background selection:bg-primary/10 selection:text-primary">
       <header className={cn(
-        "sticky top-0 z-[100] w-full transition-all duration-300 px-4 py-4 md:px-10 lg:px-20",
+        "relative z-[100] w-full transition-all duration-300 px-4 py-4 md:px-10 lg:px-20",
         isScrolled ? "glass py-3 shadow-premium border-b border-border/50" : "bg-background border-b border-border"
       )}>
-       <div className="mx-auto flex max-w-7xl items-center justify-between">
+       <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-              <Mountain size={18} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent group-hover:scale-110 transition-transform">
+              <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight">SICEPU</h1>
+            <h1 className="text-xl font-bold tracking-tight">SiLapor</h1>
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex">
@@ -206,6 +206,13 @@ export default function LaporanPublikPage() {
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <div className="h-6 w-px bg-border mx-2" />
+            
+            {user && (
+              <>
+                <NotificationBell />
+                <div className="h-6 w-px bg-border mx-2" />
+              </>
+            )}
             
             {user ? (
               <div className="relative" ref={dropdownRef}>
@@ -242,19 +249,19 @@ export default function LaporanPublikPage() {
           {!selectedReport ? (
             <motion.div key="list" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
               <section className="bg-muted/30 py-20 border-b border-border">
-                <div className="container max-w-7xl mx-auto px-4 text-center">
+                <div className="container max-w-6xl mx-auto px-6 lg:px-8 text-center">
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                    <span className="text-primary font-bold text-[10px] uppercase tracking-[0.3em] mb-4 inline-block">Masyarakat Terbuka</span>
+                    <span className="text-[#10b981] font-bold text-[10px] uppercase tracking-[0.3em] mb-4 inline-block">Masyarakat Terbuka</span>
                     <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">Eksplorasi Aduan Publik</h2>
                     <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-                      Wadah keterbukaan informasi atas seluruh aduan masyarakat SICEPU.
+                      Wadah keterbukaan informasi atas seluruh aduan masyarakat SiLapor.
                     </p>
                   </motion.div>
                 </div>
               </section>
 
-              <section className="container max-w-7xl mx-auto px-4 py-16">
-                <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between sticky top-24 z-30 py-4 bg-background/80 backdrop-blur-md px-2 -mx-2 rounded-lg border border-transparent focus-within:border-border transition-all">
+              <section className="container max-w-6xl mx-auto px-6 lg:px-8 py-16">
+                <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between py-4 bg-transparent px-2 -mx-2 rounded-lg border border-transparent focus-within:border-border transition-all">
                   <div className="relative flex-1 max-w-xl group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={20} />
                     <input
@@ -322,7 +329,7 @@ export default function LaporanPublikPage() {
                               <span className={cn(
                                 "px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border",
                                 report.status?.toLowerCase() === "selesai" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
-                                report.status?.toLowerCase() === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-blue-50 text-blue-600 border-blue-200"
+                                report.status?.toLowerCase() === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-emerald-50 text-emerald-600 border-emerald-200"
                               )}>
                                 {report.status || "Baru"}
                               </span>

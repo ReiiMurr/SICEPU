@@ -34,7 +34,6 @@ import {
   LogOut,
   Mail,
   MapPin,
-  Mountain,
   Phone,
   PlusCircle,
   Search,
@@ -50,6 +49,7 @@ import { Footer } from "@/components/footer";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { VillageOfficialCard } from "@/components/village-official-card";
 import { ComplaintDetail } from "@/components/complaint-detail";
+import { NotificationBell } from "@/components/notification-bell";
 import CountUp from "@/components/count-up";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -247,7 +247,7 @@ export default function Home() {
     
     const shareData = {
         title: `Laporan: ${selectedReport.title}`,
-        text: `Detail Laporon SICEPU:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+        text: `Detail Laporon SiLapor:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
         url: window.location.origin + `/laporan?id=${selectedReport.id}`
     };
 
@@ -296,16 +296,16 @@ export default function Home() {
           className="absolute top-0 left-0 right-0 h-0.5 bg-primary origin-left z-[60]"
           style={{ scaleX }}
         />
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
+        <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300">
-              <Mountain size={20} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-transparent group-hover:scale-110 transition-transform duration-300">
+              <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
             </div>
             <span className={cn(
               "text-xl font-bold tracking-tight transition-colors duration-300",
               isScrolled ? "text-foreground" : "text-white"
             )}>
-              SICEPU
+              SiLapor
             </span>
           </Link>
 
@@ -334,8 +334,15 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <div className="h-8 w-px bg-border/20 mx-2 hidden sm:block" />
+            <div className="h-6 w-px bg-border/20 mx-2" />
             
+            {user && (
+              <>
+                <NotificationBell />
+                <div className="h-6 w-px bg-border/20 mx-2" />
+              </>
+            )}
+
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <motion.button
@@ -453,10 +460,10 @@ export default function Home() {
                     </span>
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[1.05] tracking-tight drop-shadow-2xl">
                       Layanan Aspirasi & <br />
-                      <span className="text-primary italic font-medium">Pengaduan Rakyat</span>
+                      <span className="text-[#10b981] italic font-medium">Pengaduan Rakyat</span>
                     </h1>
                     <p className="mt-8 text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
-                      Wadah aspirasi masyarakat SICEPU yang transparan, profesional, dan responsif terhadap seluruh laporan Anda.
+                      Wadah aspirasi masyarakat SiLapor yang transparan, profesional, dan responsif terhadap seluruh laporan Anda.
                     </p>
                   </motion.div>
 
@@ -512,7 +519,7 @@ export default function Home() {
                 </div>
               </section>
 
-              <section className="section-padding container max-w-7xl mx-auto px-4">
+              <section className="section-padding container max-w-6xl mx-auto px-6 lg:px-8">
                  <motion.div 
                    initial={{ opacity: 0, y: 30 }}
                    whileInView={{ opacity: 1, y: 0 }}
@@ -530,7 +537,7 @@ export default function Home() {
                     { label: "Total Laporan", val: stats.total, icon: <FileText className="text-blue-500" />, bg: "bg-blue-50" },
                     { label: "Dalam Proses", val: stats.diproses, icon: <Clock className="text-amber-500" />, bg: "bg-amber-50" },
                     { label: "Selesai", val: stats.selesai, icon: <CheckCircle className="text-emerald-500" />, bg: "bg-emerald-50" },
-                    { label: "Aspirasi Baru", val: stats.baru, icon: <PlusCircle className="text-primary" />, bg: "bg-emerald-50" }
+                    { label: "Aspirasi Baru", val: stats.baru, icon: <PlusCircle className="text-emerald-500" />, bg: "bg-emerald-50/50" }
                   ].map((stat, i) => (
                     <motion.div
                       key={i}
@@ -560,7 +567,7 @@ export default function Home() {
               </section>
 
               <section className="section-padding bg-muted/30">
-                <div className="container max-w-7xl mx-auto px-4">
+                <div className="container max-w-6xl mx-auto px-6 lg:px-8">
                    <motion.div 
                      initial={{ opacity: 0, y: 30 }}
                      whileInView={{ opacity: 1, y: 0 }}
@@ -605,7 +612,7 @@ export default function Home() {
                                 <span className={cn(
                                   "px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border",
                                   report.status?.toLowerCase() === "selesai" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
-                                  report.status?.toLowerCase() === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-blue-50 text-blue-600 border-blue-200"
+                                  report.status?.toLowerCase() === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" : "bg-emerald-50 text-emerald-600 border-emerald-200"
                                 )}>
                                   {report.status || "Baru"}
                                 </span>
@@ -642,7 +649,7 @@ export default function Home() {
               </section>
 
               <section className="section-padding overflow-hidden">
-                <div className="container max-w-7xl mx-auto px-4">
+                <div className="container max-w-6xl mx-auto px-6 lg:px-8">
                    <motion.div 
                      initial={{ opacity: 0, y: 30 }}
                      whileInView={{ opacity: 1, y: 0 }}
@@ -650,7 +657,7 @@ export default function Home() {
                      className="mb-16"
                    >
                      <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-center md:text-left">Perangkat Desa</h2>
-                     <p className="mt-4 text-muted-foreground text-lg text-center md:text-left">Tokoh-tokoh penggerak pembangunan SICEPU.</p>
+                     <p className="mt-4 text-muted-foreground text-lg text-center md:text-left">Tokoh-tokoh penggerak pembangunan SiLapor.</p>
                    </motion.div>
 
                    <div className="relative overflow-hidden">

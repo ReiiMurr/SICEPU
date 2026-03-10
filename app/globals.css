@@ -4,7 +4,7 @@
 
 :root {
   /* Refined Color Palette - Clean & Modern */
-  --primary: #10b981; /* Emerald 500 */
+  --primary: #10b981; /* Emerald 500 - Village Brand */
   --primary-foreground: #ffffff;
   
   --background: #fafafa;
@@ -44,6 +44,8 @@
   --background: #09090b;
   --foreground: #f8fafc;
   
+  --primary: #10b981;
+  
   --card: #09090b;
   --card-foreground: #f8fafc;
   
@@ -58,6 +60,7 @@
   
   --border: #27272a;
   --input: #27272a;
+  --ring: #10b981;
 }
 
 @theme inline {
@@ -112,6 +115,18 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .dark .glass {
   background: rgba(9, 9, 11, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-premium {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass-premium {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Custom Scrollbar */
