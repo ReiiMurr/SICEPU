@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirect") || "/";
@@ -212,7 +212,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="space-y-4">
-                          <Label htmlFor="otp" className="text-center block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Masukkan 6 Digit Kode OTP</Label>
+                           <Label htmlFor="otp" className="text-center block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Masukkan 6 Digit Kode OTP</Label>
                           <Input
                             id="otp"
                             name="otp"
@@ -282,5 +282,17 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-dvh flex items-center justify-center bg-background">
+        <div className="h-8 w-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    }>
+      <RegisterForm />
+    </React.Suspense>
   );
 }

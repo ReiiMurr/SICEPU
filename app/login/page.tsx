@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirect") || "/";
@@ -65,7 +65,7 @@ export default function LoginPage() {
       }
     }
     checkExistingAuth();
-  }, [router]);
+  }, [router, redirectPath]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -293,5 +293,17 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-dvh flex items-center justify-center bg-background">
+        <div className="h-8 w-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginForm />
+    </React.Suspense>
   );
 }
