@@ -165,59 +165,47 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     const NavContent = () => (
-        <div className="flex h-full flex-col p-4 lg:p-6">
+        <div className="flex h-full flex-col p-5">
             {/* Logo Section */}
-            <div className="mb-10 flex items-center gap-3 px-2">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-white shadow-xl shadow-primary/20">
-                    <Mountain size={24} />
+            <div className="mb-8 flex items-center gap-3 px-2">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm dark:bg-primary">
+                    <Mountain size={20} />
                 </div>
                 {(isSidebarOpen || isMobileMenuOpen) && (
                     <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         className="overflow-hidden"
                     >
-                        <h1 className="whitespace-nowrap text-lg font-semibold tracking-tight leading-none">Admin Laporin</h1>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/70 mt-1">Sistem Desa</p>
+                        <h1 className="whitespace-nowrap text-base font-bold tracking-tight text-slate-900 dark:text-white">SICEPU Admin</h1>
+                        <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">Digital Portal</p>
                     </motion.div>
                 )}
             </div>
 
             {/* Nav Items */}
-            <nav className="flex-1 space-y-2">
+            <nav className="flex-1 space-y-1">
                 {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                         <Link key={item.href} href={item.href}>
-                            <motion.div
-                                whileHover={{ x: 5 }}
-                                whileTap={{ scale: 0.98 }}
+                            <div
                                 className={cn(
-                                    "relative flex items-center gap-4 rounded-[1.25rem] px-4 py-3.5 transition-all duration-300",
+                                    "relative flex items-center gap-3 rounded-lg px-3.5 py-2.5 transition-colors duration-200",
                                     isActive
-                                        ? "bg-primary text-white shadow-2xl shadow-primary/30"
-                                        : "text-muted-foreground hover:bg-primary/10 hover:text-primary group"
+                                        ? "bg-primary text-white shadow-sm"
+                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
                                 )}
                             >
-                                <div className={cn(
-                                    "transition-transform",
-                                    !isActive && "group-hover:scale-110"
-                                )}>
+                                <div className="shrink-0">
                                     {item.icon}
                                 </div>
                                 {(isSidebarOpen || isMobileMenuOpen) && (
-                                    <motion.span
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        className="text-sm font-semibold tracking-wide"
-                                    >
+                                    <span className="text-sm font-medium tracking-tight">
                                         {item.label}
-                                    </motion.span>
+                                    </span>
                                 )}
-                                {isActive && (isSidebarOpen || isMobileMenuOpen) && (
-                                    <motion.div layoutId="active-pill" className="absolute right-3 h-1.5 w-1.5 rounded-full bg-white shadow-sm" />
-                                )}
-                            </motion.div>
+                            </div>
                         </Link>
                     );
                 })}
@@ -232,8 +220,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         </div>
                         {(isSidebarOpen || isMobileMenuOpen) && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-hidden">
-                                <p className="text-sm font-bold truncate max-w-[100px]">{user.profile?.full_name || user.email?.split('@')[0]}</p>
-                                <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Administrator</p>
+                                <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate max-w-[100px]">{user.profile?.full_name || user.email?.split('@')[0]}</p>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Main Administrator</p>
                             </motion.div>
                         )}
                     </div>
@@ -245,9 +233,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 await supabase.auth.signOut();
                                 router.push("/login");
                             }}
-                            className="p-2.5 rounded-xl hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-all duration-300"
+                            className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-400 hover:text-rose-500 transition-colors"
                         >
-                            <LogOut size={20} />
+                           <LogOut size={20} />
                         </button>
                     )}
                 </div>
@@ -260,8 +248,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Desktop Sidebar */}
             <motion.aside
                 initial={false}
-                animate={{ width: isSidebarOpen ? 280 : 100 }}
-                className="fixed left-0 top-0 z-40 hidden h-screen border-r border-border bg-card/40 backdrop-blur-3xl lg:block transition-all duration-500"
+                animate={{ width: isSidebarOpen ? 260 : 80 }}
+                className="fixed left-0 top-0 z-40 hidden h-screen border-r border-border bg-white dark:bg-slate-950 lg:block transition-all duration-300"
             >
                 <NavContent />
             </motion.aside>
@@ -323,49 +311,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Main Content Area */}
             <main
                 className={cn(
-                    "flex-1 w-full transition-all duration-500 pt-20 lg:pt-0",
-                    isSidebarOpen ? "lg:ml-[280px]" : "lg:ml-[100px]"
+                    "flex-1 w-full transition-all duration-300 pt-16 lg:pt-0",
+                    isSidebarOpen ? "lg:ml-[260px]" : "lg:ml-[80px]"
                 )}
             >
                 {/* Desktop Header */}
-                <header className="sticky top-0 z-30 hidden w-full border-b border-border bg-background/60 py-4 backdrop-blur-xl px-10 lg:block">
+                <header className="sticky top-0 z-30 hidden w-full border-b border-border bg-white/80 dark:bg-slate-950/80 py-3 backdrop-blur-md px-8 lg:block">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setSidebarOpen(!isSidebarOpen)}
-                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 hover:bg-primary hover:text-white transition-all duration-300"
+                                className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-400 transition-colors"
                             >
-                                {isSidebarOpen ? <ChevronLeft size={20} /> : <Menu size={20} />}
+                                {isSidebarOpen ? <ChevronLeft size={18} /> : <Menu size={18} />}
                             </button>
+                            <div className="h-4 w-[1px] bg-border mx-2" />
                             <div>
-                                <h2 className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground/60 mb-0.5">Control Center</h2>
-                                <p className="text-sm font-semibold">{pathname === "/admin" ? "DASHBOARD OVERVIEW" : pathname.split('/').pop()?.toUpperCase()}</p>
+                                <h2 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                                    {pathname === "/admin" ? "SISTEM OVERVIEW" : pathname.split('/').pop()?.toUpperCase()}
+                                </h2>
                             </div>
                         </div>
-                        <div className="flex items-center gap-6">
+                       <div className="flex items-center gap-6">
                             {/* Real-time Notification Dropdown */}
                             <div className="relative" ref={notifRef}>
                                 <button
                                     onClick={() => setIsNotifOpen(!isNotifOpen)}
                                     className={cn(
-                                        "flex items-center gap-3 px-4 py-2.5 rounded-2xl border transition-all duration-300",
+                                        "relative flex items-center justify-center w-9 h-9 rounded-lg border transition-colors",
                                         notifications.length > 0 
-                                            ? "bg-orange-500/10 text-orange-600 border-orange-500/20 hover:bg-orange-500/20" 
-                                            : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                                            ? "bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100" 
+                                            : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400"
                                     )}
                                 >
-                                    <div className="relative">
-                                        <Bell size={18} className={cn(notifications.length > 0 && "animate-bounce")} />
-                                        {notifications.length > 0 && (
-                                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-orange-500"></span>
-                                            </span>
-                                        )}
-                                    </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">
-                                        {notifications.length > 0 ? `${notifications.length} Alert Baru` : "Tidak Ada Alert"}
-                                    </span>
+                                    <Bell size={18} />
+                                    {notifications.length > 0 && (
+                                        <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 rounded-full bg-amber-500 shadow-[0_0_0_2px_#fff] dark:shadow-[0_0_0_2px_#020617]" />
+                                    )}
                                 </button>
 
                                 <AnimatePresence>
@@ -374,11 +356,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute right-0 mt-3 w-[360px] origin-top-right rounded-[2rem] border border-border bg-card p-4 shadow-2xl backdrop-blur-3xl z-[100]"
+                                            className="absolute right-0 mt-3 w-80 origin-top-right rounded-xl border border-border bg-white dark:bg-slate-950 p-3 shadow-xl z-[100]"
                                         >
-                                            <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 mb-4">
-                                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Notifikasi Laporan</h3>
-                                                <span className="px-2 py-0.5 rounded-full bg-orange-500/10 text-[9px] font-bold text-orange-600 uppercase">Baru</span>
+                                            <div className="flex items-center justify-between px-2 py-2 border-b border-border/50 mb-3">
+                                                <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Notifikasi Laporan</h3>
+                                                <span className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-500/10 text-[9px] font-bold text-blue-600 uppercase">Baru</span>
                                             </div>
 
                                             <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar">
@@ -389,7 +371,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                                             href="/admin/reports"
                                                             onClick={() => {
                                                                 setIsNotifOpen(false);
-                                                                // Simpan ke localStorage agar tidak muncul lagi saat refresh
                                                                 try {
                                                                     const stored = localStorage.getItem('admin_read_notifs');
                                                                     const readIds = stored ? JSON.parse(stored) : [];
@@ -398,26 +379,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                                                         localStorage.setItem('admin_read_notifs', JSON.stringify(readIds));
                                                                     }
                                                                 } catch (e) { console.error("LS Error:", e); }
-                                                                
-                                                                // Update state lokal
                                                                 setNotifications(prev => prev.filter(n => n.id !== notif.id));
                                                             }}
                                                         >
-                                                            <div className="flex flex-col gap-1 p-4 rounded-2xl hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all group">
+                                                            <div className="flex flex-col gap-1 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 border border-transparent transition-all group">
                                                                 <div className="flex items-center justify-between">
-                                                                    <p className="text-sm font-bold truncate pr-4 group-hover:text-primary transition-colors">{notif.title || "Laporan Tanpa Judul"}</p>
-                                                                    <span className="text-[9px] font-bold text-muted-foreground/60 whitespace-nowrap">
+                                                                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate pr-4 group-hover:text-primary transition-colors">{notif.title || "Laporan Tanpa Judul"}</p>
+                                                                    <span className="text-[9px] font-bold text-slate-400 whitespace-nowrap">
                                                                         {new Date(notif.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                                                                     </span>
                                                                 </div>
-                                                                <p className="text-[11px] text-muted-foreground line-clamp-1">{notif.description}</p>
-                                                                <div className="flex items-center gap-1.5 mt-2">
-                                                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-                                                                    <p className="text-[9px] font-black uppercase tracking-widest text-orange-600">{notif.location}</p>
+                                                                <p className="text-[10px] text-slate-500 line-clamp-1">{notif.description}</p>
+                                                                <div className="flex items-center gap-1.5 mt-1.5">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                                    <p className="text-[8px] font-bold uppercase tracking-wider text-amber-600">{notif.location}</p>
                                                                 </div>
                                                             </div>
                                                         </Link>
-                                                    ))
+                                                   ))
                                                 ) : (
                                                     <div className="py-12 flex flex-col items-center justify-center text-center opacity-50">
                                                         <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4 text-muted-foreground">
@@ -432,13 +411,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                             {notifications.length > 0 && (
                                                 <Link 
                                                     href="/admin/reports" 
-                                                    className="block mt-4 text-center py-3 rounded-xl bg-muted/30 hover:bg-primary/10 text-[10px] font-black uppercase tracking-[0.3em] text-primary transition-all"
+                                                    className="block mt-3 text-center py-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 hover:bg-primary text-slate-600 dark:text-slate-400 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-all"
                                                     onClick={() => setIsNotifOpen(false)}
                                                 >
                                                     Lihat Semua Laporan
                                                 </Link>
                                             )}
-                                        </motion.div>
+                                       </motion.div>
                                     )}
                                 </AnimatePresence>
                             </div>

@@ -78,20 +78,20 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                         initial={{ opacity: 0 }} 
                         animate={{ opacity: 1 }} 
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-md"
+                        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black backdrop-blur-md h-dvh w-screen"
                         onClick={() => setSelectedImageIdx(null)}
                     >
                         <motion.button 
-                            className="absolute top-8 right-8 text-white/70 hover:text-white transition-all hover:scale-110 z-[10000]"
+                            className="absolute top-6 right-6 text-white/80 hover:text-white transition-all z-[10000] p-2"
                             onClick={(e) => { e.stopPropagation(); setSelectedImageIdx(null); }}
                         >
-                            <X size={36} />
+                            <X size={32} strokeWidth={2.5} />
                         </motion.button>
                         
-                        <div className="relative w-full h-full flex items-center justify-center p-4 md:p-12" onClick={e => e.stopPropagation()}>
+                        <div className="relative w-full h-full flex items-center justify-center p-0 md:p-12 mb-safe" onClick={e => e.stopPropagation()}>
                             <img 
                                 src={images[selectedImageIdx]} 
-                                className="max-h-full max-w-full object-contain rounded-lg shadow-2xl select-none" 
+                                className="max-h-full max-w-full object-contain select-none" 
                                 alt="Gallery Preview"
                             />
                             
@@ -99,13 +99,13 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                                 <>
                                     <button 
                                         onClick={() => setSelectedImageIdx(prev => prev === 0 ? images.length - 1 : prev! - 1)}
-                                        className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
+                                        className="absolute left-6 top-1/2 -translate-y-1/2 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
                                     >
                                         <ChevronRight className="rotate-180" size={24} />
                                     </button>
                                     <button 
                                         onClick={() => setSelectedImageIdx(prev => prev === images.length - 1 ? 0 : prev! + 1)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
+                                        className="absolute right-6 top-1/2 -translate-y-1/2 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
                                     >
                                         <ChevronRight size={24} />
                                     </button>

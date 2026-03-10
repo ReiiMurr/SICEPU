@@ -8,7 +8,6 @@ import {
     Settings,
     Shield,
     Bell,
-    Share2,
     Terminal,
     Info,
     Layout,
@@ -18,9 +17,10 @@ import {
     CheckCircle,
     AlertCircle,
     Building2,
-    Check,
     RefreshCw,
-    Activity
+    Activity,
+    ChevronRight,
+    Lock
 } from "lucide-react";
 
 export default function AdminSettingsPage() {
@@ -42,8 +42,6 @@ export default function AdminSettingsPage() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
-    // In a real app, settings would be fetched from a 'configs' table.
-    // For now, we'll simulate the persistence.
     useEffect(() => {
         const saved = localStorage.getItem("admin_settings");
         if (saved) {
@@ -62,7 +60,6 @@ export default function AdminSettingsPage() {
                 .limit(20);
             
             if (error) {
-                // If table doesn't exist (code 42P01), we use fallback without logging error
                 if (error.code === '42P01') {
                     setSystemLogs([
                         { action: "Login Admin", user_email: "admin@sicepu.id", created_at: new Date().toISOString(), type: "info" },
@@ -91,17 +88,10 @@ export default function AdminSettingsPage() {
     const handleSave = async () => {
         setLoading(true);
         setMessage(null);
-
         try {
-            // Simulate API delay
             await new Promise(resolve => setTimeout(resolve, 800));
-
-            // Persist to localStorage for demo purposes in this environment
             localStorage.setItem("admin_settings", JSON.stringify(settings));
-
             setMessage({ text: "Pengaturan berhasil diperbarui!", type: 'success' });
-
-            // Auto hide message
             setTimeout(() => setMessage(null), 3000);
         } catch (err) {
             setMessage({ text: "Gagal menyimpan pengaturan.", type: 'error' });
@@ -111,21 +101,23 @@ export default function AdminSettingsPage() {
     };
 
     return (
-        <div className="space-y-6 max-w-5xl">
-            <div className="flex justify-between items-end">
+        <div className="space-y-6 max-w-6xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Pengaturan Sistem</h1>
-                    <p className="text-sm font-semibold text-muted-foreground mt-1">Konfigurasikan operasional dan parameter portal administrasi.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Pengaturan Sistem</h1>
+                    <p className="text-sm text-slate-500 mt-1">Konfigurasikan operasional dan parameter portal administrasi.</p>
                 </div>
                 <AnimatePresence>
                     {message && (
                         <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
                             className={cn(
-                                "px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-3 shadow-lg",
-                                message.type === 'success' ? "bg-emerald-500 text-white shadow-emerald-500/20" : "bg-rose-500 text-white shadow-rose-500/20"
+                                "px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2.5 shadow-sm border",
+                                message.type === 'success' 
+                                    ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                                    : "bg-rose-50 text-rose-600 border-rose-100"
                             )}
                         >
                             {message.type === 'success' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
@@ -135,292 +127,254 @@ export default function AdminSettingsPage() {
                 </AnimatePresence>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Sidebar Menu */}
-                <div className="lg:col-span-1 space-y-2">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* Navigation Sidebar */}
+                <div className="lg:col-span-1 space-y-1.5">
                     {[
-                        { name: "Umum", icon: Settings },
-                        { name: "Notifikasi", icon: Bell },
-                        { name: "Log Sistem", icon: Terminal }
+                        { id: "Umum", icon: Settings, label: "Umum" },
+                        { id: "Notifikasi", icon: Bell, label: "Notifikasi" },
+                        { id: "Keamanan", icon: Shield, label: "Keamanan" },
+                        { id: "Log Sistem", icon: Terminal, label: "Log Sistem" }
                     ].map((item) => (
                         <button
-                            key={item.name}
-                            onClick={() => setActiveTab(item.name)}
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id)}
                             className={cn(
-                                "w-full text-left px-5 py-4 rounded-2xl text-sm font-semibold transition-all flex items-center gap-4 group",
-                                activeTab === item.name ? "bg-primary text-white shadow-xl shadow-primary/20" : "text-muted-foreground hover:bg-card hover:border-border border border-transparent"
+                                "w-full text-left px-4 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-between group border",
+                                activeTab === item.id 
+                                    ? "bg-slate-900 dark:bg-primary text-white border-transparent shadow-sm" 
+                                    : "bg-white dark:bg-slate-900 text-slate-500 border-border hover:border-slate-300 dark:hover:border-slate-700"
                             )}
                         >
-                            <item.icon size={20} className={cn("transition-transform", activeTab === item.name ? "" : "group-hover:scale-110")} />
-                            {item.name}
+                            <div className="flex items-center gap-3">
+                                <item.icon size={16} />
+                                {item.label}
+                            </div>
+                            <ChevronRight size={14} className={cn("opacity-0 transition-all", activeTab === item.id ? "opacity-100 translate-x-0" : "group-hover:opacity-40 -translate-x-1")} />
                         </button>
                     ))}
 
-                    <div className="pt-10 border-t border-border mt-10">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-5 mb-5 flex items-center gap-2">
-                            <Info size={14} />
-                            Informasi Sistem
-                        </p>
-                        <div className="px-5 space-y-3">
-                            <div className="flex justify-between text-[11px] font-bold">
-                                <span className="text-muted-foreground">Versi Aplikasi</span>
-                                <span className="bg-muted px-2 py-0.5 rounded text-[10px]">v4.2.0-stable</span>
+                    <div className="mt-8 p-5 rounded-xl border border-border bg-slate-50 dark:bg-slate-900/50">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Info size={14} className="text-slate-400" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Informasi Sistem</span>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex justify-between text-[10px] font-bold">
+                                <span className="text-slate-400 uppercase tracking-tight">Versi</span>
+                                <span className="text-slate-600 dark:text-slate-300">v4.2.0-STABLE</span>
                             </div>
-                            <div className="flex justify-between text-[11px] font-bold">
-                                <span className="text-muted-foreground">Database</span>
+                            <div className="flex justify-between text-[10px] font-bold">
+                                <span className="text-slate-400 uppercase tracking-tight">Database</span>
                                 <span className="text-emerald-500 flex items-center gap-1.5">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.1)]" />
                                     Online
                                 </span>
                             </div>
-                            <div className="flex justify-between text-[11px] font-bold">
-                                <span className="text-muted-foreground">Uptime API</span>
-                                <span>99.99%</span>
+                            <div className="flex justify-between text-[10px] font-bold">
+                                <span className="text-slate-400 uppercase tracking-tight">Environment</span>
+                                <span className="text-amber-600">PRODUCTION</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Settings Form */}
+                {/* Form Content */}
                 <div className="lg:col-span-3 space-y-6">
                     <motion.div
                         key={activeTab}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="p-10 rounded-[2.5rem] bg-card border border-border shadow-sm space-y-10"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-white dark:bg-slate-900 rounded-xl border border-border shadow-sm overflow-hidden"
                     >
-                        {activeTab === "Umum" && (
-                            <>
-                                {/* Section: Umum */}
-                                <div className="space-y-8">
-                                    <div className="flex items-center gap-4 pb-4 border-b border-border/50">
-                                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                            <Layout size={20} />
-                                        </div>
-                                        <h3 className="text-lg font-bold tracking-tight text-foreground">Profil Portal SICEPU</h3>
-                                    </div>
+                        {/* Header Section */}
+                        <div className="px-6 py-4 border-b border-border bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center border border-border">
+                                    {activeTab === "Umum" && <Layout size={16} />}
+                                    {activeTab === "Notifikasi" && <Bell size={16} />}
+                                    {activeTab === "Keamanan" && <Shield size={16} />}
+                                    {activeTab === "Log Sistem" && <Terminal size={16} />}
+                                </div>
+                                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">{activeTab}</h3>
+                            </div>
+                            {activeTab === "Log Sistem" && (
+                                <button 
+                                    onClick={fetchLogs}
+                                    disabled={isLoggingLoading}
+                                    className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md transition-all text-slate-400"
+                                >
+                                    <RefreshCw size={14} className={cn(isLoggingLoading && "animate-spin")} />
+                                </button>
+                            )}
+                        </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">Nama Instansi / Portal</label>
-                                            <div className="relative group">
-                                                <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+                        <div className="p-8 space-y-8">
+                            {activeTab === "Umum" && (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2.5">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Nama Portal SICEPU</label>
+                                            <div className="relative">
+                                                <Building2 size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
-                                                    id="siteName"
-                                                    name="siteName"
                                                     type="text"
                                                     value={settings.siteName}
                                                     onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
-                                                    className="w-full bg-muted/20 hover:bg-muted/40 border border-transparent focus:border-primary/30 rounded-2xl py-4 pl-12 pr-5 text-sm font-semibold focus:ring-4 focus:ring-primary/5 outline-none transition-all text-foreground"
+                                                    className="w-full bg-slate-50 dark:bg-slate-950 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-bold focus:ring-1 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-400"
                                                 />
                                             </div>
                                         </div>
-
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">Email Notifikasi Admin</label>
-                                            <div className="relative group">
-                                                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+                                        <div className="space-y-2.5">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Email Administratif</label>
+                                            <div className="relative">
+                                                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
-                                                    id="notifyEmail"
-                                                    name="notifyEmail"
                                                     type="email"
                                                     value={settings.notifyEmail}
                                                     onChange={(e) => setSettings({ ...settings, notifyEmail: e.target.value })}
-                                                    className="w-full bg-muted/20 hover:bg-muted/40 border border-transparent focus:border-primary/30 rounded-2xl py-4 pl-12 pr-5 text-sm font-semibold focus:ring-4 focus:ring-primary/5 outline-none transition-all text-foreground"
+                                                    className="w-full bg-slate-50 dark:bg-slate-950 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-bold focus:ring-1 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-400"
                                                 />
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Section: Fitur */}
-                                <div className="space-y-8">
-                                    <div className="flex items-center gap-4 pb-4 border-b border-border/50">
-                                        <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
-                                            <Settings size={20} />
-                                        </div>
-                                        <h3 className="text-lg font-bold tracking-tight text-foreground">Konfigurasi Fitur & Modul</h3>
-                                    </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="flex items-center justify-between p-6 rounded-3xl bg-muted/20 border border-border group hover:border-primary/30 transition-all">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-2xl bg-card border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
-                                                    <Globe size={18} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-bold">Laporan Publik</p>
-                                                    <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">Visibilitas tanpa login</p>
+                                        <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-950 border border-border">
+                                            <div className="flex items-center gap-3">
+                                                <Globe size={16} className="text-slate-400" />
+                                                <div className="space-y-0.5">
+                                                    <p className="text-xs font-bold text-slate-900 dark:text-white">Laporan Publik</p>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Visibilitas Masyarakat</p>
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={() => setSettings({ ...settings, allowPublic: !settings.allowPublic })}
-                                                className={cn(
-                                                    "w-12 h-6 rounded-full transition-all relative shadow-inner overflow-hidden",
-                                                    settings.allowPublic ? "bg-primary" : "bg-muted-foreground/30"
-                                                )}
+                                                className={cn("w-9 h-5 rounded-full transition-all relative", settings.allowPublic ? "bg-primary" : "bg-slate-300 dark:bg-slate-800")}
                                             >
-                                                <div className={cn(
-                                                    "w-4 h-4 bg-white rounded-full absolute top-1 transition-all shadow-md",
-                                                    settings.allowPublic ? "right-1" : "left-1"
-                                                )} />
+                                                <div className={cn("w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-all", settings.allowPublic ? "left-4.75" : "left-0.75")} />
                                             </button>
                                         </div>
-
-                                        <div className="flex items-center justify-between p-6 rounded-3xl bg-muted/20 border border-border group hover:border-rose-300 transition-all">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-2xl bg-card border border-border flex items-center justify-center text-muted-foreground group-hover:text-rose-500 transition-colors">
-                                                    <Wrench size={18} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-bold">Mode Pemeliharaan</p>
-                                                    <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">Kunci fitur pelaporan</p>
+                                        <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-950 border border-border">
+                                            <div className="flex items-center gap-3">
+                                                <Wrench size={16} className="text-slate-400" />
+                                                <div className="space-y-0.5">
+                                                    <p className="text-xs font-bold text-slate-900 dark:text-white">Maintenance Mode</p>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Kunci Fitur Input</p>
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={() => setSettings({ ...settings, maintenance: !settings.maintenance })}
-                                                className={cn(
-                                                    "w-12 h-6 rounded-full transition-all relative shadow-inner overflow-hidden",
-                                                    settings.maintenance ? "bg-rose-500" : "bg-muted-foreground/30"
-                                                )}
+                                                className={cn("w-9 h-5 rounded-full transition-all relative", settings.maintenance ? "bg-rose-500" : "bg-slate-300 dark:bg-slate-800")}
                                             >
-                                                <div className={cn(
-                                                    "w-4 h-4 bg-white rounded-full absolute top-1 transition-all shadow-md",
-                                                    settings.maintenance ? "right-1" : "left-1"
-                                                )} />
+                                                <div className={cn("w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-all", settings.maintenance ? "left-4.75" : "left-0.75")} />
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                            </>
-                        )}
+                            )}
 
-                        {activeTab === "Notifikasi" && (
-                            <div className="space-y-8">
-                                <div className="flex items-center gap-4 pb-4 border-b border-border/50">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                                        <Bell size={20} />
-                                    </div>
-                                    <h3 className="text-lg font-bold tracking-tight text-foreground">Pengaturan Pemberitahuan</h3>
-                                </div>
-
+                            {activeTab === "Notifikasi" && (
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-6 rounded-3xl bg-muted/20 border border-border">
-                                        <div>
-                                            <p className="text-sm font-bold">Email Laporan Baru</p>
-                                            <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">Dapatkan email setiap ada aduan masuk</p>
+                                    <div className="flex items-center justify-between p-5 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-950/30">
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-bold text-slate-900 dark:text-white">Alert Email Laporan Baru</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight leading-relaxed">Berikan notifikasi seketika saat ada aspirasi masuk</p>
                                         </div>
                                         <button
                                             onClick={() => setSettings({ ...settings, notifyNewReport: !settings.notifyNewReport })}
-                                            className={cn("w-12 h-6 rounded-full transition-all relative shadow-inner", settings.notifyNewReport ? "bg-primary" : "bg-muted-foreground/30")}
+                                            className={cn("w-9 h-5 rounded-full transition-all relative", settings.notifyNewReport ? "bg-primary" : "bg-slate-300 dark:bg-slate-800")}
                                         >
-                                            <div className={cn("w-4 h-4 bg-white rounded-full absolute top-1 transition-all", settings.notifyNewReport ? "right-1" : "left-1")} />
+                                            <div className={cn("w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-all", settings.notifyNewReport ? "left-4.75" : "left-0.75")} />
                                         </button>
                                     </div>
-
-                                    <div className="flex items-center justify-between p-6 rounded-3xl bg-muted/20 border border-border">
-                                        <div>
-                                            <p className="text-sm font-bold">Email Feedback Warga</p>
-                                            <p className="text-[10px] font-semibold text-muted-foreground mt-0.5">Dapatkan email jika warga membalas tanggapan</p>
+                                    <div className="flex items-center justify-between p-5 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-950/30">
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-bold text-slate-900 dark:text-white">Email Feedback Warga</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight leading-relaxed">Pantau respon masyarakat terhadap tindak lanjut laporan</p>
                                         </div>
                                         <button
                                             onClick={() => setSettings({ ...settings, notifyStatusChange: !settings.notifyStatusChange })}
-                                            className={cn("w-12 h-6 rounded-full transition-all relative shadow-inner", settings.notifyStatusChange ? "bg-primary" : "bg-muted-foreground/30")}
+                                            className={cn("w-9 h-5 rounded-full transition-all relative", settings.notifyStatusChange ? "bg-primary" : "bg-slate-300 dark:bg-slate-800")}
                                         >
-                                            <div className={cn("w-4 h-4 bg-white rounded-full absolute top-1 transition-all", settings.notifyStatusChange ? "right-1" : "left-1")} />
+                                            <div className={cn("w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-all", settings.notifyStatusChange ? "left-4.75" : "left-0.75")} />
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {activeTab === "Keamanan" && (
-                            <div className="space-y-8">
-                                <div className="flex items-center gap-4 pb-4 border-b border-border/50">
-                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                                        <Shield size={20} />
-                                    </div>
-                                    <h3 className="text-lg font-bold tracking-tight text-foreground">Sekuritas Administrasi</h3>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">Session Timeout</label>
-                                        <select 
-                                            value={settings.sessionTimeout}
-                                            onChange={(e) => setSettings({...settings, sessionTimeout: e.target.value})}
-                                            className="w-full bg-muted/20 border border-transparent focus:border-primary/30 rounded-2xl py-4 px-5 text-sm font-semibold outline-none transition-all text-foreground appearance-none"
-                                        >
-                                            <option>15 menit</option>
-                                            <option>30 menit</option>
-                                            <option>1 jam</option>
-                                            <option>Selamanya</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 ml-1">IP Whitelist</label>
-                                        <input
-                                            type="text"
-                                            value={settings.ipWhitelist}
-                                            onChange={(e) => setSettings({...settings, ipWhitelist: e.target.value})}
-                                            className="w-full bg-muted/20 border border-transparent focus:border-primary/30 rounded-2xl py-4 px-5 text-sm font-semibold outline-none transition-all text-foreground"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === "Log Sistem" && (
-                            <div className="space-y-8">
-                                <div className="flex items-center justify-between pb-4 border-b border-border/50">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-slate-500/10 text-slate-500 flex items-center justify-center">
-                                            <Terminal size={20} />
+                            {activeTab === "Keamanan" && (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2.5">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Durasi Sesi Admin</label>
+                                            <select 
+                                                value={settings.sessionTimeout}
+                                                onChange={(e) => setSettings({...settings, sessionTimeout: e.target.value})}
+                                                className="w-full bg-slate-50 dark:bg-slate-950 border border-border rounded-lg py-2.5 px-4 text-xs font-bold outline-none transition-all text-slate-900 dark:text-white appearance-none"
+                                            >
+                                                <option>15 menit</option>
+                                                <option>30 menit</option>
+                                                <option>1 jam</option>
+                                                <option>Selamanya</option>
+                                            </select>
                                         </div>
-                                        <h3 className="text-lg font-bold tracking-tight text-foreground">Aktivitas Sistem Terakhir</h3>
+                                        <div className="space-y-2.5">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Akses IP Terbatas</label>
+                                            <div className="relative">
+                                                <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                                <input
+                                                    type="text"
+                                                    value={settings.ipWhitelist}
+                                                    onChange={(e) => setSettings({...settings, ipWhitelist: e.target.value})}
+                                                    className="w-full bg-slate-50 dark:bg-slate-950 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-bold font-mono outline-none transition-all text-slate-900 dark:text-white"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button 
-                                        onClick={fetchLogs}
-                                        disabled={isLoggingLoading}
-                                        className="p-2 hover:bg-muted rounded-lg transition-all"
-                                    >
-                                        <RefreshCw size={18} className={cn(isLoggingLoading && "animate-spin")} />
-                                    </button>
+                                    <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20">
+                                        <div className="flex gap-3">
+                                            <AlertCircle size={18} className="text-amber-600 mt-0.5" />
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-bold text-amber-700">Peringatan Keamanan</p>
+                                                <p className="text-[10px] font-bold uppercase tracking-tight text-amber-600 leading-relaxed">IP Whitelist 0.0.0.0/0 berarti akses terbuka untuk seluruh alamat IP di internet.</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                            )}
 
+                            {activeTab === "Log Sistem" && (
                                 <div className="space-y-3">
                                     {isLoggingLoading ? (
-                                        <div className="py-20 text-center font-bold text-muted-foreground uppercase tracking-widest text-[10px] animate-pulse">
-                                            Sinkronisasi Log...
-                                        </div>
+                                        <div className="py-20 text-center"><RefreshCw size={24} className="animate-spin text-slate-300 mx-auto" /></div>
                                     ) : systemLogs.length === 0 ? (
-                                        <div className="py-20 text-center text-muted-foreground">
-                                            <p className="font-bold uppercase tracking-widest text-[10px]">Belum Ada Log</p>
-                                            <p className="text-xs mt-2">Seluruh aktivitas admin akan tercatat di sini.</p>
+                                        <div className="py-20 text-center border border-dashed border-border rounded-xl">
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Belum Ada Aktivitas Tercatat</p>
                                         </div>
                                     ) : (
                                         systemLogs.map((log, i) => (
-                                            <div key={i} className="flex items-center justify-between p-6 rounded-[1.75rem] bg-muted/20 border border-border/50 group hover:bg-muted/40 transition-all">
+                                            <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-950/50 border border-border group hover:border-slate-300 transition-all">
                                                 <div className="flex items-center gap-4">
                                                     <div className={cn(
-                                                        "w-10 h-10 rounded-xl flex items-center justify-center",
-                                                        log.type === "success" ? "bg-emerald-500/10 text-emerald-500" : 
-                                                        log.type === "warning" ? "bg-amber-500/10 text-amber-500" : 
-                                                        "bg-blue-500/10 text-blue-500"
+                                                        "w-9 h-9 rounded-lg flex items-center justify-center border",
+                                                        log.type === "success" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : 
+                                                        log.type === "warning" ? "bg-amber-50 text-amber-600 border-amber-100" : 
+                                                        "bg-white dark:bg-slate-900 text-slate-600 border-border"
                                                     )}>
-                                                        <Activity size={18} />
+                                                        <Activity size={16} />
                                                     </div>
                                                     <div>
-                                                        <span className="text-sm font-bold block">{log.action}</span>
-                                                        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{log.user_email || "System"}</span>
+                                                        <span className="text-xs font-bold block text-slate-900 dark:text-white tracking-tight">{log.action}</span>
+                                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{log.user_email || "System Engine"}</span>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-xs font-mono font-bold text-foreground">
+                                                    <p className="text-[10px] font-bold text-slate-900 dark:text-white">
                                                         {new Date(log.created_at).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })}
                                                     </p>
-                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">
+                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest opacity-60">
                                                         {new Date(log.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}
                                                     </p>
                                                 </div>
@@ -428,24 +382,23 @@ export default function AdminSettingsPage() {
                                         ))
                                     )}
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
 
                         {activeTab !== "Log Sistem" && (
-                            <div className="pt-8 flex justify-end gap-4 border-t border-border/50">
+                            <div className="px-8 py-6 bg-slate-50/50 dark:bg-slate-900/50 border-t border-border flex justify-end gap-3">
                                 <button
-                                    onClick={() => setMessage({ text: "Perubahan dibatalkan.", type: 'error' })}
-                                    className="px-8 py-4 rounded-2xl text-sm font-black text-muted-foreground hover:bg-muted transition-all active:scale-95"
+                                    onClick={() => setMessage({ text: "Operasi dibatalkan.", type: 'error' })}
+                                    className="px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all"
                                 >
-                                    Batalkan
+                                    Batal
                                 </button>
                                 <button
                                     onClick={handleSave}
                                     disabled={loading}
-                                    className="px-10 py-4 rounded-2xl bg-primary text-white text-sm font-black shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 active:translate-y-0 transition-all disabled:opacity-50 disabled:translate-y-0 flex items-center gap-3"
+                                    className="px-8 py-2.5 rounded-lg bg-slate-900 dark:bg-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-sm hover:opacity-90 transition-all flex items-center gap-2"
                                 >
-                                    {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                                    {loading ? "Menyimpan..." : "Simpan Perubahan"}
+                                    {loading ? <RefreshCw size={12} className="animate-spin" /> : "Simpan Pengaturan"}
                                 </button>
                             </div>
                         )}

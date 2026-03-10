@@ -35,10 +35,10 @@ type Complaint = {
 export default function AdminDashboard() {
   const [time, setTime] = useState(new Date());
   const [stats, setStats] = useState([
-    { label: "Total Laporan", value: "0", trend: "+12%", icon: <BarChart3 size={24} />, color: "from-blue-500 to-indigo-600", key: "total" },
-    { label: "Menunggu", value: "0", trend: "-5%", icon: <Clock3 size={24} />, color: "from-amber-400 to-orange-500", key: "baru" },
-    { label: "Selesai", value: "0", trend: "+18%", icon: <CheckCircle2 size={24} />, color: "from-emerald-400 to-teal-500", key: "selesai" },
-    { label: "Ditolak", value: "0", trend: "+2%", icon: <XCircle size={24} />, color: "from-rose-500 to-red-600", key: "ditolak" },
+    { label: "Total Laporan", value: "0", trend: "+12%", icon: <BarChart3 size={20} />, status: "total", color: "text-blue-600 bg-blue-50 dark:bg-blue-500/10" },
+    { label: "Menunggu", value: "0", trend: "-5%", icon: <Clock3 size={20} />, status: "baru", color: "text-amber-600 bg-amber-50 dark:bg-amber-500/10" },
+    { label: "Selesai", value: "0", trend: "+18%", icon: <CheckCircle2 size={20} />, status: "selesai", color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" },
+    { label: "Ditolak", value: "0", trend: "+2%", icon: <XCircle size={20} />, status: "ditolak", color: "text-rose-600 bg-rose-50 dark:bg-rose-500/10" },
   ]);
   const [recentReports, setRecentReports] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,10 +68,10 @@ export default function AdminDashboard() {
         const ditolak = complaints.filter(c => c.status === "ditolak").length;
 
         setStats(prev => prev.map(s => {
-          if (s.key === "total") return { ...s, value: total.toString() };
-          if (s.key === "baru") return { ...s, value: baru.toString() };
-          if (s.key === "selesai") return { ...s, value: selesai.toString() };
-          if (s.key === "ditolak") return { ...s, value: ditolak.toString() };
+          if (s.status === "total") return { ...s, value: total.toString() };
+          if (s.status === "baru") return { ...s, value: baru.toString() };
+          if (s.status === "selesai") return { ...s, value: selesai.toString() };
+          if (s.status === "ditolak") return { ...s, value: ditolak.toString() };
           return s;
         }));
 
@@ -103,183 +103,152 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6 md:space-y-10 pb-20">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl md:text-5xl font-bold tracking-tighter"
-          >
-            Dashboard
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-muted-foreground mt-2 font-semibold uppercase text-[10px] tracking-[0.2em] opacity-60"
-          >
-            Pusat Kendali SICEPU
-          </motion.p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Admin Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-1">Pantau rincian aktivitas dan laporan masyarakat hari ini.</p>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex items-center gap-4 bg-card/40 backdrop-blur-xl border border-border/50 p-4 md:p-6 rounded-[2rem] shadow-2xl shadow-primary/5"
-        >
-          <div className="text-right">
-            <p className="text-[9px] font-semibold uppercase tracking-widest text-primary mb-1">Local Time</p>
-            <p className="text-xl md:text-2xl font-bold font-mono">
+        <div className="flex items-center gap-4 bg-white dark:bg-slate-900 border border-border p-3 rounded-xl shadow-sm">
+          <div className="text-right px-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">System Time</p>
+            <p className="text-base font-bold text-slate-900 dark:text-white">
               {time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
             </p>
           </div>
-          <div className="h-10 w-[1px] bg-border/50" />
-          <div className="text-right">
-            <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">System Status</p>
-            <div className="flex items-center gap-2 justify-end">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-              <p className="text-xs font-semibold uppercase tracking-widest">Optimal</p>
+          <div className="h-8 w-[1px] bg-border" />
+          <div className="text-right px-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Server Status</p>
+            <div className="flex items-center gap-1.5 justify-end">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <p className="text-[10px] font-bold uppercase text-emerald-600">Stable</p>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Stats Grid - Optimal for Mobile Scroll */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {stats.map((stat, i) => (
-          <motion.div
+          <div
             key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="relative group overflow-hidden p-5 md:p-8 rounded-[1.75rem] md:rounded-[2.5rem] bg-card border border-border shadow-sm hover:shadow-2xl transition-all duration-500"
+            className="relative overflow-hidden p-6 rounded-xl bg-white dark:bg-slate-900 border border-border shadow-sm hover:border-primary/20 transition-all duration-300"
           >
-            <div className={cn("absolute -top-4 -right-4 w-24 h-24 opacity-5 bg-gradient-to-br transition-all duration-700 group-hover:opacity-20", stat.color)} style={{ clipPath: 'circle(50% at 100% 0%)' }} />
-            <div className="relative z-10">
-              <div className={cn("inline-flex p-3 md:p-4 rounded-2xl text-white shadow-xl", "bg-gradient-to-br " + stat.color)}>
+            <div className="flex items-center gap-4">
+              <div className={cn("inline-flex p-2.5 rounded-lg shadow-sm border border-black/5", stat.color)}>
                 {stat.icon}
               </div>
-              <div className="mt-4 md:mt-8">
-                <p className="text-[9px] md:text-[10px] font-semibold uppercase tracking-widest text-muted-foreground truncate opacity-70">{stat.label}</p>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <h3 className="text-2xl md:text-4xl font-bold tracking-tight">{loading ? "..." : stat.value}</h3>
-                  <span className={cn("text-[9px] font-semibold px-2 py-0.5 rounded-full", stat.trend.includes('+') ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600")}>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{stat.label}</p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">{loading ? "..." : stat.value}</h3>
+                  <span className={cn("text-[9px] font-bold px-1.5 py-0.5 rounded", stat.trend.includes('+') ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" : "text-rose-600 bg-rose-50 dark:bg-rose-500/10")}>
                     {stat.trend}
                   </span>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
         {/* Chart Area - Responsive Height */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="lg:col-span-2 p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] bg-card border border-border shadow-sm relative overflow-hidden"
+        <div
+          className="lg:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm"
         >
-          <div className="flex items-center justify-between mb-8 md:mb-12">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-lg md:text-2xl font-bold tracking-tight leading-none text-foreground">Pelayanan</h3>
-              <p className="text-[10px] md:text-sm font-semibold text-muted-foreground mt-2">Performa mingguan reports</p>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">Performa Pelayanan</h3>
+              <p className="text-xs text-slate-500 mt-1">Statistik laporan masuk dalam 7 hari terakhir.</p>
             </div>
-            <button onClick={fetchDashboardData} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-muted/50 hover:bg-primary hover:text-white transition-all">
-              <RefreshCw size={20} />
+            <button onClick={fetchDashboardData} className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 transition-colors">
+              <RefreshCw size={16} />
             </button>
           </div>
 
-          <div className="flex items-end justify-between h-40 md:h-64 gap-3 md:gap-8 px-2">
+          <div className="flex items-end justify-between h-48 md:h-56 gap-2 px-2">
             {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-3 group/bar max-w-[40px]">
-                <div className="w-full flex gap-1 items-end h-full">
+              <div key={i} className="flex-1 flex flex-col items-center gap-2 group/bar">
+                <div className="w-full h-full bg-slate-50 dark:bg-slate-800/50 rounded-lg relative overflow-hidden">
                   <motion.div
                     initial={{ height: 0 }}
                     animate={{ height: `${h}%` }}
-                    transition={{ duration: 1.5, delay: 0.6 + (i * 0.1), ease: "circOut" }}
-                    className="flex-1 bg-primary/20 rounded-t-lg md:rounded-t-xl group-hover/bar:bg-primary/30 transition-all"
+                    transition={{ duration: 1, delay: 0.2 + (i * 0.05), ease: "easeOut" }}
+                    className="absolute bottom-0 left-0 right-0 bg-primary/40 group-hover/bar:bg-primary/60 transition-colors"
                   />
                   <motion.div
                     initial={{ height: 0 }}
-                    animate={{ height: `${h * 0.7}%` }}
-                    transition={{ duration: 1.5, delay: 0.8 + (i * 0.1), ease: "circOut" }}
-                    className="flex-1 bg-primary rounded-t-lg md:rounded-t-xl shadow-[0_0_20px_rgba(20,184,20,0.3)]"
+                    animate={{ height: `${h * 0.6}%` }}
+                    transition={{ duration: 1, delay: 0.4 + (i * 0.05), ease: "easeOut" }}
+                    className="absolute bottom-0 left-0 right-0 bg-primary shadow-sm"
                   />
                 </div>
-                <span className="text-[9px] md:text-[10px] font-black text-muted-foreground/50">{"SMTWRFS"[i]}</span>
+                <span className="text-[10px] font-bold text-slate-400 capitalize">{"sen,sel,rab,kam,jum,sab,min".split(',')[i]}</span>
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Quick Actions - List View for Mobile */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-          className="p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] bg-primary/[0.03] border border-primary/10 shadow-sm relative overflow-hidden"
+        <div
+          className="p-6 md:p-8 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-border shadow-sm"
         >
-          <h3 className="text-lg md:text-xl font-black tracking-tight mb-6 md:mb-10">Aksi Cepat</h3>
+          <h3 className="text-sm font-bold tracking-tight mb-6 uppercase text-slate-500">Aksi Cepat</h3>
 
-          <div className="grid grid-cols-1 gap-3 md:gap-4">
+          <div className="grid grid-cols-1 gap-3">
             {[
-              { title: "Pengumuman", icon: <Megaphone size={18} />, color: "bg-primary/10 text-primary", href: "/admin/settings" },
-              { title: "Masyarakat", icon: <Users size={18} />, color: "bg-orange-500/10 text-orange-600", href: "/admin/users" },
-              { title: "Laporan", icon: <ClipboardList size={18} />, color: "bg-blue-500/10 text-blue-600", href: "/admin/reports" },
+              { title: "Buat Pengumuman", icon: <Megaphone size={16} />, color: "bg-primary text-white", href: "/admin/settings" },
+              { title: "Kelola Masyarakat", icon: <Users size={16} />, color: "bg-slate-800 text-white", href: "/admin/users" },
+              { title: "Verifikasi Laporan", icon: <ClipboardList size={16} />, color: "bg-slate-200 text-slate-700", href: "/admin/reports" },
             ].map((act, idx) => (
               <Link
                 key={idx}
                 href={act.href}
-                className="flex items-center gap-4 p-4 md:p-5 rounded-2xl md:rounded-[1.75rem] bg-card border border-border hover:border-primary/40 hover:bg-primary/5 transition-all group shadow-sm"
+                className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-800 border border-border hover:border-primary/40 hover:bg-primary/5 transition-all group"
               >
-                <div className={cn("w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110", act.color)}>
+                <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform", act.color)}>
                   {act.icon}
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs md:text-sm font-semibold text-foreground">{act.title}</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-200">{act.title}</p>
                 </div>
-                <ArrowRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                <ArrowRight size={14} className="text-slate-400 group-hover:text-primary transition-colors" />
               </Link>
             ))}
           </div>
 
-          <div className="mt-8 p-6 rounded-2xl md:rounded-3xl bg-card border border-border/50">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-              <span className="text-[9px] font-semibold uppercase tracking-widest text-primary/80">Cluster SICEPU-01</span>
+          <div className="mt-6 p-4 rounded-xl bg-white dark:bg-slate-800 border border-border shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Security Zone</span>
             </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center text-[9px] font-semibold uppercase tracking-widest leading-none">
-                <span className="text-muted-foreground">Database</span>
-                <span className="text-emerald-500">Live</span>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest leading-none">
+                <span className="text-slate-400">Node</span>
+                <span className="text-slate-600 dark:text-slate-300">SICEPU-01</span>
               </div>
-              <div className="flex justify-between items-center text-[9px] font-semibold uppercase tracking-widest leading-none">
-                <span className="text-muted-foreground">Encryption</span>
-                <span className="text-blue-500">AES-256</span>
+              <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest leading-none">
+                <span className="text-slate-400">Status</span>
+                <span className="text-emerald-500">Active</span>
               </div>
             </div>
           </div>
-        </motion.div>
-      </div>
+        </div>
+     </div>
 
       {/* Responsive Table / Card List */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="overflow-hidden rounded-[2rem] md:rounded-[3rem] bg-card border border-border shadow-sm"
+      <div
+        className="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm"
       >
-        <div className="p-6 md:p-12 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-6 bg-card/50">
+        <div className="p-6 md:px-8 md:py-6 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h3 className="text-xl md:text-3xl font-bold tracking-tighter text-foreground">Antrean Baru</h3>
-            <p className="text-[10px] md:text-sm font-semibold text-muted-foreground mt-2 uppercase tracking-widest opacity-60">Memerlukan Validasi Segera</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Laporan Terbaru</h3>
+            <p className="text-xs text-slate-500 mt-1">Laporan masuk yang perlu segera divalidasi oleh petugas.</p>
           </div>
           <Link href="/admin/reports" className="w-full md:w-auto">
-            <button className="w-full md:w-auto bg-primary text-white border-none py-4 px-10 rounded-2xl font-semibold text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] active:scale-95 transition-all outline-none">
-              Semua Antrean
+            <button className="w-full md:w-auto bg-slate-900 dark:bg-primary text-white py-2.5 px-6 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:opacity-90 transition-all shadow-sm">
+              Lihat Semua
             </button>
           </Link>
         </div>
@@ -289,35 +258,35 @@ export default function AdminDashboard() {
           {/* Table for Tablet/Desktop */}
           <table className="w-full text-left hidden md:table">
             <thead>
-              <tr className="bg-muted/30 border-b border-border">
-                <th className="px-10 py-8 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 text-left">Pelapor</th>
-                <th className="px-10 py-8 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 text-left">Subjek</th>
-                <th className="px-10 py-8 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 text-center">Status</th>
-                <th className="px-10 py-8 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 text-center">Prioritas</th>
-                <th className="px-10 py-8 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 text-left">Waktu</th>
-                <th className="px-10 py-8 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 text-right">Aksi</th>
+              <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-border">
+                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Pelapor</th>
+                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Judul Laporan</th>
+                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-center">Status</th>
+                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-center">Prioritas</th>
+                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Waktu</th>
+                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/50">
+            <tbody className="divide-y divide-border">
               {loading ? (
-                <tr><td colSpan={6} className="p-20 text-center font-black uppercase tracking-widest text-muted-foreground/40 animate-pulse">Loading core data...</td></tr>
+                <tr><td colSpan={6} className="p-12 text-center text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Memuat data...</td></tr>
               ) : recentReports.map((report) => (
-                <tr key={report.id} className="hover:bg-muted/20 transition-all duration-300 group">
-                  <td className="px-10 py-8">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/30 text-primary flex items-center justify-center font-bold text-sm border border-primary/10 shadow-sm transition-transform group-hover:scale-110">
-                        {report.profiles?.full_name?.[0] || "?"}
+                <tr key={report.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group">
+                  <td className="px-8 py-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-xs border border-border shadow-sm">
+                        {report.profiles?.full_name?.[0]?.toUpperCase() || "?"}
                       </div>
-                      <span className="text-sm font-semibold text-foreground truncate max-w-[120px]">{report.profiles?.full_name || "Anonim"}</span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate max-w-[120px]">{report.profiles?.full_name || "Masyarakat"}</span>
                     </div>
                   </td>
-                  <td className="px-10 py-8">
-                    <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate max-w-[200px]">{report.title}</p>
-                    <p className="text-[10px] font-semibold text-muted-foreground mt-1 opacity-50">#ID-{report.id.slice(0, 6).toUpperCase()}</p>
+                  <td className="px-8 py-5">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{report.title}</p>
+                    <p className="text-[10px] font-medium text-slate-400 mt-0.5">#{report.id.slice(0, 8).toUpperCase()}</p>
                   </td>
-                  <td className="px-10 py-8 text-center">
+                  <td className="px-8 py-5 text-center">
                     <span className={cn(
-                      "inline-flex px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border shadow-sm",
+                      "inline-flex px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border",
                       report.status === "baru" ? "bg-blue-50 text-blue-600 border-blue-200" :
                         report.status === "diproses" ? "bg-amber-50 text-amber-600 border-amber-200" :
                           report.status === "selesai" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
@@ -326,29 +295,23 @@ export default function AdminDashboard() {
                       {report.status}
                     </span>
                   </td>
-                  <td className="px-10 py-8 text-center">
+                  <td className="px-8 py-5 text-center">
                     <div className={cn(
-                      "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-border/50",
-                      getPriority(report.id) === "Tinggi" ? "text-rose-600 bg-rose-500/5" :
-                        getPriority(report.id) === "Sedang" ? "text-amber-600 bg-amber-500/5" :
-                          "text-emerald-600 bg-emerald-500/5"
+                      "inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[9px] font-bold uppercase border border-transparent",
+                      getPriority(report.id) === "Tinggi" ? "text-rose-600 bg-rose-50" :
+                        getPriority(report.id) === "Sedang" ? "text-amber-600 bg-amber-50" :
+                          "text-emerald-600 bg-emerald-50"
                     )}>
-                      <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm",
-                        getPriority(report.id) === "Tinggi" ? "bg-rose-600" :
-                          getPriority(report.id) === "Sedang" ? "bg-amber-600" :
-                            "bg-emerald-600"
-                      )} />
                       {getPriority(report.id)}
                     </div>
                   </td>
-                  <td className="px-10 py-8 text-left">
-                    <p className="text-xs font-semibold text-foreground text-left">{formatTimeAgo(report.created_at)}</p>
-                    <p className="text-[9px] font-semibold text-muted-foreground/40 mt-1 uppercase tracking-widest text-left">Waktu SICEPU</p>
+                  <td className="px-8 py-5 text-left">
+                    <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400">{formatTimeAgo(report.created_at)}</p>
                   </td>
-                  <td className="px-10 py-8 text-right">
+                  <td className="px-8 py-5 text-right">
                     <Link href={`/admin/reports?id=${report.id}`}>
-                      <button className="w-12 h-12 rounded-2xl bg-muted/30 text-muted-foreground hover:bg-primary hover:text-white transition-all duration-500 flex items-center justify-center shadow-sm">
-                        <ClipboardList size={20} />
+                      <button className="px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-[10px] font-bold transition-colors">
+                        DETAIL
                       </button>
                     </Link>
                   </td>
@@ -403,7 +366,7 @@ export default function AdminDashboard() {
             ))}
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

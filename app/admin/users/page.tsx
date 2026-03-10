@@ -10,9 +10,8 @@ import {
     UserCheck,
     ShieldAlert,
     Search,
-    Edit2,
-    Ban,
-    User
+    User,
+    Inbox
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -42,9 +41,6 @@ export default function AdminUsersPage() {
         try {
             setLoading(true);
             const supabase = getSupabaseClient();
-
-            // Note: We can only fetch auth.users if we have service_role,
-            // but we can fetch profiles. 
             const { data: profiles, error } = await supabase
                 .from("profiles")
                 .select("*")
@@ -53,7 +49,6 @@ export default function AdminUsersPage() {
             if (error) throw error;
 
             if (profiles) {
-                // Filter: Hanya tampilkan peran 'masyarakat' (bukan admin/petugas)
                 const masyarakatOnly = profiles.filter(p => p.role !== "admin" && p.role !== "petugas");
                 setUsers(masyarakatOnly as UserProfile[]);
 
@@ -80,17 +75,17 @@ export default function AdminUsersPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 text-foreground">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Data Masyarakat</h1>
-                    <p className="text-sm font-semibold text-muted-foreground mt-1">Kelola akun dan pantau profil warga terdaftar.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Data Masyarakat</h1>
+                    <p className="text-sm text-slate-500 mt-1">Kelola akun dan pantau profil warga terdaftar.</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button onClick={fetchUsers} className="p-2.5 rounded-xl bg-card border border-border hover:bg-muted transition-colors text-muted-foreground shadow-sm">
-                        <RefreshCw size={18} />
+                    <button onClick={fetchUsers} className="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-slate-900 border border-border shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        <RefreshCw size={16} className="text-slate-600" />
                     </button>
-                    <button className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all outline-none">
-                        <UserPlus size={16} />
+                    <button className="flex items-center gap-2 bg-slate-900 dark:bg-primary text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm hover:opacity-90 transition-all">
+                        <UserPlus size={14} />
                         Tambah Petugas
                     </button>
                 </div>
@@ -98,40 +93,40 @@ export default function AdminUsersPage() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 rounded-2xl bg-card border border-border flex items-center gap-5 shadow-sm">
-                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shadow-inner">
+                <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-border flex items-center gap-5 shadow-sm">
+                    <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-500 flex items-center justify-center border border-blue-100 dark:border-blue-500/20">
                         <Users size={24} />
                     </div>
                     <div>
-                        <p className="text-2xl font-bold tracking-tight text-foreground">{loading ? "..." : stats.total}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Warga Terdaftar</p>
+                        <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{loading ? "..." : stats.total}</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Warga Terdaftar</p>
                     </div>
                 </div>
-                <div className="p-6 rounded-2xl bg-card border border-border flex items-center gap-5 shadow-sm">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shadow-inner">
+                <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-border flex items-center gap-5 shadow-sm">
+                    <div className="w-12 h-12 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
                         <UserCheck size={24} />
                     </div>
                     <div>
-                        <p className="text-2xl font-bold tracking-tight text-foreground">{loading ? "..." : stats.activeToday}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Pendaftar Baru</p>
+                        <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{loading ? "..." : stats.activeToday}</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Pendaftar Baru</p>
                     </div>
                 </div>
-                <div className="p-6 rounded-2xl bg-card border border-border flex items-center gap-5 shadow-sm">
-                    <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shadow-inner">
+                <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-border flex items-center gap-5 shadow-sm">
+                    <div className="w-12 h-12 rounded-lg bg-rose-50 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center border border-rose-100 dark:border-rose-500/20">
                         <ShieldAlert size={24} />
                     </div>
                     <div>
-                        <p className="text-2xl font-bold tracking-tight text-foreground">{loading ? "..." : stats.suspended}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Akun Ditangguhkan</p>
+                        <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{loading ? "..." : stats.suspended}</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Akun Ditangguhkan</p>
                     </div>
                 </div>
             </div>
 
             {/* Users Table */}
-            <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-border bg-card">
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-border shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-border bg-slate-50/50 dark:bg-slate-900/50">
                     <div className="relative max-w-md">
-                        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input
                             id="search-users"
                             name="search-users"
@@ -139,54 +134,56 @@ export default function AdminUsersPage() {
                             placeholder="Cari nama atau ID..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-muted/30 border-none rounded-xl py-3 pl-12 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted-foreground/40 text-foreground"
+                            className="w-full bg-white dark:bg-slate-950 border border-border rounded-lg py-2 pl-10 pr-4 text-xs font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-400"
                         />
                     </div>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-muted/10">
-                                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Profil Pengguna</th>
-                                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">ID Unik</th>
-                                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Peran</th>
-                                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-center">Bergabung</th>
-                                <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Status</th>
+                            <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-border">
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Profil Pengguna</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">ID Unik</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Peran</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">Bergabung</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
                              {loading ? (
-                                <tr><td colSpan={5} className="p-10 text-center font-semibold text-muted-foreground">Memuat data warga...</td></tr>
+                                 [1, 2, 3].map(i => (
+                                     <tr key={i}><td colSpan={5} className="p-8 text-center animate-pulse"><div className="h-4 bg-slate-100 dark:bg-slate-800 rounded w-full max-w-md mx-auto" /></td></tr>
+                                 ))
                             ) : filteredUsers.length === 0 ? (
-                                <tr><td colSpan={5} className="p-10 text-center font-semibold text-muted-foreground">Tidak ada data warga ditemukan.</td></tr>
+                                <tr><td colSpan={5} className="p-12 text-center text-slate-400"><div className="flex flex-col items-center"><Inbox size={32} className="mb-3 opacity-20" /><p className="text-xs font-bold uppercase tracking-widest">Tidak ada data ditemukan</p></div></td></tr>
                             ) : filteredUsers.map((u) => (
-                                <tr key={u.id} className="hover:bg-muted/30 transition-colors group">
-                                    <td className="px-8 py-5">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 text-primary flex items-center justify-center font-bold text-xs border border-primary/10 transition-transform group-hover:scale-110 shadow-sm">
-                                                {u.full_name?.[0] || <User size={16} />}
+                                <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center font-bold text-xs border border-border">
+                                                {u.full_name?.[0] || <User size={14} />}
                                             </div>
-                                            <span className="text-sm font-bold text-foreground">{u.full_name || "Tanpa Nama"}</span>
+                                            <span className="text-xs font-bold text-slate-900 dark:text-white">{u.full_name || "Tanpa Nama"}</span>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-5 text-xs font-mono font-medium text-muted-foreground">{u.id.slice(0, 13)}...</td>
-                                    <td className="px-8 py-5">
+                                    <td className="px-6 py-4 text-[10px] font-mono font-medium text-slate-400">{u.id.toUpperCase()}</td>
+                                    <td className="px-6 py-4">
                                         <span className={cn(
-                                            "inline-flex px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest border",
-                                            u.role === "admin" ? "bg-indigo-50 text-indigo-600 border-indigo-200" :
-                                                u.role === "petugas" ? "bg-amber-50 text-amber-600 border-amber-200" :
-                                                    "bg-muted/50 text-muted-foreground border-border"
+                                            "inline-flex px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest border",
+                                            u.role === "admin" ? "bg-indigo-50 text-indigo-600 border-indigo-100" :
+                                                u.role === "petugas" ? "bg-amber-50 text-amber-600 border-amber-100" :
+                                                    "bg-slate-50 text-slate-500 border-slate-200"
                                         )}>
                                             {u.role}
                                         </span>
                                     </td>
-                                    <td className="px-8 py-5 text-center text-xs font-semibold text-muted-foreground/70">
+                                    <td className="px-6 py-4 text-center text-[10px] font-bold text-slate-500">
                                         {new Date(u.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </td>
-                                     <td className="px-8 py-5">
+                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <div className={cn("w-1.5 h-1.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/10")} />
-                                            <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">Aktif</span>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.1)]" />
+                                            <span className="text-[9px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Aktif</span>
                                         </div>
                                     </td>
                                 </tr>

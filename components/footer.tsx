@@ -77,10 +77,10 @@ export function Footer() {
                         <h3 className="mb-6 text-sm font-bold uppercase tracking-widest text-foreground">Tautan Cepat</h3>
                         <ul className="space-y-4 text-sm">
                             {[
-                                { label: "Visi & Misi", href: "/tentang" },
+                                { label: "Tentang", href: "/tentang" },
                                 { label: "Anggaran Desa", href: "#" },
                                 { label: "Produk Hukum", href: "#" },
-                                { label: "Layanan Mandiri", href: "#" },
+                                { label: "Layanan Umum", href: "#" },
                                 { label: "Data Penduduk", href: "#" }
                             ].map((link) => (
                                 <li key={link.label}>
