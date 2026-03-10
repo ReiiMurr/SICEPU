@@ -266,7 +266,7 @@ function LoginForm() {
                 <div className="h-1 w-16 bg-emerald-400 mb-8 rounded-full" />
                 <h3 className="text-4xl font-black leading-tight mb-4">Transparansi Desa <br />di Genggaman Anda</h3>
                 <p className="text-emerald-50/80 text-lg max-w-sm leading-relaxed">
-                  Platform digital SiLapor hadir untuk memudahkan interaksi antara warga dan pemerintah desa secara profesional.
+                  Platform digital iLapor hadir untuk memudahkan interaksi antara warga dan pemerintah desa secara profesional.
                 </p>
               </div>
 
