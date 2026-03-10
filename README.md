@@ -76,19 +76,31 @@ SICEPU is built with a **Mature & Professional** aesthetic. We avoid flashy "AI-
 
 ---
 
-## 📊 Project Structure
-```text
-├── app/              # Next.js App Router (Pages & API)
-├── components/       # Reusable UI Components
-├── lib/              # Utility functions and Supabase Client
-├── public/           # Static assets and .htaccess
-└── supabase/         # SQL migrations and schema notes
-```
+## 🌐 Deployment Dinamis (Hostinger Node.js)
 
----
+Website ini sudah dikonfigurasi menggunakan mode **Standalone** dan memiliki Custom **Server.js** untuk memastikan kompatibilitas penuh dengan paket Node.js Hostinger.
 
-## 📄 License
-This project is for educational and administrative purposes in village governance.
+### Langkah-langkah Update di Hostinger:
 
----
-Built with ❤️ by [ReiiMurr](https://github.com/ReiiMurr)
+1.  **Build Proyek**: Di komputer lokal Anda, jalankan:
+    ```bash
+    npm run build
+    ```
+2.  **Siapkan File**: Ambil file/folder berikut untuk diunggah:
+    -   `.next` (terutama folder `standalone` di dalamnya jika Anda ingin menghemat ruang)
+    -   `public`
+    -   `server.js` (Entry point utama)
+    -   `package.json`
+    -   `.env` (Sudah diisi credentials Supabase & Mailer)
+3.  **Unggah ke File Manager**: Masukkan semua file di atas ke folder domain Anda di Hostinger.
+4.  **Konfigurasi Node.js di Dashboard Hostinger**:
+    -   **Application Root**: `/` (atau folder tempat Anda menaruh file)
+    -   **Application URL**: `https://domainanda.com`
+    -   **Application Startup File**: `server.js`
+    -   **Run Status**: Start/Restart
+5.  **Environment Variables**: Pastikan Anda sudah memasukkan semua variabel dari `.env` ke kolom "Environment Variables" di menu Node.js Hostinger.
+
+### Keunggulan Mode Dinamis:
+-   **SEO Friendly**: Setiap laporan memiliki meta tag dinamis.
+-   **API Terintegrasi**: Fitur kirim email notifikasi admin berjalan di sisi server.
+-   **Keamanan**: Operasi database sensitif terlindungi di belakang server Node.js.
