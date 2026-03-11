@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Lexend, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { BottomNavigation } from "@/components/bottom-navigation";
+
 
 const lexend = Lexend({
   variable: "--font-lexend",
@@ -28,16 +30,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`${lexend.variable} ${geistMono.variable}`} data-scroll-behavior="smooth">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+      <head />
+
       <body
         className="transition-colors duration-200 min-h-dvh antialiased"
       >
-        {children}
+        <div className="pb-24 md:pb-0">
+          {children}
+        </div>
+        <BottomNavigation />
+
       </body>
     </html>
   );

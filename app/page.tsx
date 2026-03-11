@@ -127,9 +127,9 @@ export default function Home() {
    const [mounted, setMounted] = useState(false);
    const [currentBg, setCurrentBg] = useState(0);
    const heroImages = [
-     "https://images.unsplash.com/photo-1559628233-eb1b1a45564b?q=80&w=2070&auto=format&fit=crop",
-     "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop",
-     "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop"
+     "/images/hero-1.png",
+     "/images/hero-2.png",
+     "/images/hero-3.png"
    ];
 
    useEffect(() => {

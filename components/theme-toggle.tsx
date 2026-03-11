@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Sun, Moon } from "lucide-react";
 
 function getInitialTheme() {
   if (typeof window === "undefined") return "light";
@@ -48,9 +49,8 @@ export function ThemeToggle() {
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       title={theme === "dark" ? "Light mode" : "Dark mode"}
     >
-      <span className="material-symbols-outlined">
-        {theme === "dark" ? "light_mode" : "dark_mode"}
-      </span>
+      {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
     </button>
   );
 }
+

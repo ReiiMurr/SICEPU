@@ -103,7 +103,7 @@ export function Footer() {
                             <img
                                 alt="Map location"
                                 className="h-full w-full object-cover opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-700"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN2cLedlFTITzw3ql_eIKaB-b9XbfWU9464a3blpZAKLP4UE9VD2m6LQaG1dIklLgz0qNjnnS7ZYX51rjKoymFdUseSLKOCSMFSXQ0IBDcSMCaqG7L__W6tQIJvYrYZSIAFO5_o6KffTqjOQq6FaFboLGjdR8kHA_Ruwmgg3uo8vLFcEnns5dJp8nsWRNLMRdKPpalZWQ"
+                                src="/images/village-map.png"
                             />
                             <div className="absolute inset-0 bg-primary/5 mix-blend-overlay" />
                         </div>
