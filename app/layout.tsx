@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SiLapor",
+  title: "Laporin",
   description: "Website laporan pengaduan masyarakat",
   icons: {
     icon: "/images/logolaporin.png",

@@ -226,7 +226,7 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest leading-none">
                 <span className="text-slate-400">Node</span>
-                <span className="text-slate-600 dark:text-slate-300">SiLapor-01</span>
+                <span className="text-slate-600 dark:text-slate-300">Laporin-01</span>
               </div>
               <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest leading-none">
                 <span className="text-slate-400">Status</span>

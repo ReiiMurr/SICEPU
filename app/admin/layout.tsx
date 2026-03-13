@@ -168,7 +168,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Logo Section */}
             <div className="mb-8 flex items-center gap-3 px-2">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-transparent">
-                    <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
+                    <img src="/images/logolaporin.png" alt="Laporin Logo" className="h-full w-full object-contain" />
                 </div>
                 {(isSidebarOpen || isMobileMenuOpen) && (
                     <motion.div
@@ -176,7 +176,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         animate={{ opacity: 1 }}
                         className="overflow-hidden"
                     >
-                        <h1 className="whitespace-nowrap text-base font-bold tracking-tight text-slate-900 dark:text-white">SiLapor Admin</h1>
+                        <h1 className="whitespace-nowrap text-base font-bold tracking-tight text-slate-900 dark:text-white">Laporin Admin</h1>
                         <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">Digital Portal</p>
                     </motion.div>
                 )}
@@ -257,7 +257,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-background/80 backdrop-blur-lg border-b border-border lg:hidden">
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-transparent">
-                        <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
+                        <img src="/images/logolaporin.png" alt="Laporin Logo" className="h-full w-full object-contain" />
                     </div>
                     <div>
                         <h2 className="text-sm font-bold tracking-tight leading-none uppercase">Laporin</h2>

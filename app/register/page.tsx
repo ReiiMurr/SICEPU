@@ -172,9 +172,9 @@ function RegisterForm() {
             <div className="mb-auto">
               <Link href="/" className="inline-flex items-center gap-2 group mb-12">
                 <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-                   <img src="/images/logolaporin.png" alt="SiLapor" className="h-8 w-8 object-contain" />
+                   <img src="/images/logolaporin.png" alt="Laporin" className="h-8 w-8 object-contain" />
                 </div>
-                <span className="font-extrabold text-2xl tracking-tighter text-foreground">SiLapor</span>
+                <span className="font-extrabold text-2xl tracking-tighter text-foreground">Laporin</span>
               </Link>
 
               <div className="space-y-3 mb-10">

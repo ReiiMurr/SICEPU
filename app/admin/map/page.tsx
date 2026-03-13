@@ -12,7 +12,7 @@ export default function AdminMapPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Peta Wilayah</h1>
-                    <p className="text-sm text-slate-500 mt-1">Dashboard Geografis SiLapor - Visualisasi data spasial desa.</p>
+                    <p className="text-sm text-slate-500 mt-1">Dashboard Geografis Laporin - Visualisasi data spasial desa.</p>
                 </div>
                 <div className="flex items-center gap-3 bg-white dark:bg-slate-900 px-4 py-2.5 rounded-lg border border-border shadow-sm">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.1)]" />

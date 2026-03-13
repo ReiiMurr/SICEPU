@@ -249,7 +249,7 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                                             {new Date(step.created_at).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(step.created_at).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })} WIB
                                         </span>
                                     </div>
-                                    <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{step.admin_name || "SiLapor SYSTEM"}</p>
+                                    <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{step.admin_name || "Laporin SYSTEM"}</p>
                                     <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
                                 </div>
                             </div>

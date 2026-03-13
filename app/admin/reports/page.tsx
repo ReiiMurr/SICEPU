@@ -183,7 +183,7 @@ export default function AdminReportsPage() {
         
         const shareData = {
             title: `Laporan: ${selectedReport.title}`,
-            text: `Detail Laporon SiLapor:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+            text: `Detail Laporan Laporin:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
             url: window.location.origin + `/laporan?id=${selectedReport.id}`
         };
 

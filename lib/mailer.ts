@@ -36,12 +36,12 @@ export async function sendAdminNotification(adminEmail: string, reportDetails: {
   const mailOptions = {
     from: `"${process.env.MAIL_FROM_NAME || "Laporin"}" <${process.env.MAIL_FROM_ADDRESS}>`,
     to: adminEmail,
-    subject: "🔔 Laporan Baru Masuk - SiLapor",
+    subject: "🔔 Laporan Baru Masuk - Laporin",
     html: `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #eef2f6; border-radius: 24px; background-color: #ffffff; color: #1a1a1a;">
         <div style="text-align: center; margin-bottom: 30px;">
           <div style="background-color: #0070f3; color: white; width: 60px; height: 60px; line-height: 60px; border-radius: 18px; display: inline-block; font-size: 24px; font-weight: bold;">S</div>
-          <h2 style="margin-top: 15px; color: #1a1a1a; font-size: 24px; letter-spacing: -0.5px;">Notifikasi SiLapor</h2>
+          <h2 style="margin-top: 15px; color: #1a1a1a; font-size: 24px; letter-spacing: -0.5px;">Notifikasi Laporin</h2>
         </div>
         
         <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 25px; margin-bottom: 30px;">
@@ -78,8 +78,8 @@ export async function sendAdminNotification(adminEmail: string, reportDetails: {
         </div>
         
         <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 40px;">
-          Ini adalah pesan otomatis dari sistem SiLapor.<br/>
-          &copy; 2024 SiLapor. Semua hak dilindungi.
+          Ini adalah pesan otomatis dari sistem Laporin.<br/>
+          &copy; 2024 Laporin. Semua hak dilindungi.
         </p>
       </div>
     `,
@@ -92,12 +92,12 @@ export async function sendUserNotification(userEmail: string, reportDetails: { t
   const mailOptions = {
     from: `"${process.env.MAIL_FROM_NAME || "Laporin"}" <${process.env.MAIL_FROM_ADDRESS}>`,
     to: userEmail,
-    subject: `🔔 Update Laporan: ${reportDetails.status} - SiLapor`,
+    subject: `🔔 Update Laporan: ${reportDetails.status} - Laporin`,
     html: `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #eef2f6; border-radius: 24px; background-color: #ffffff; color: #1a1a1a;">
         <div style="text-align: center; margin-bottom: 30px;">
           <div style="background-color: #10b981; color: white; width: 60px; height: 60px; line-height: 60px; border-radius: 18px; display: inline-block; font-size: 24px; font-weight: bold;">S</div>
-          <h2 style="margin-top: 15px; color: #1a1a1a; font-size: 24px; letter-spacing: -0.5px;">Update Laporan SiLapor</h2>
+          <h2 style="margin-top: 15px; color: #1a1a1a; font-size: 24px; letter-spacing: -0.5px;">Update Laporan Laporin</h2>
         </div>
         
         <div style="background-color: #f0fdf4; border: 1px solid #dcfce7; border-radius: 20px; padding: 25px; margin-bottom: 30px;">
@@ -129,8 +129,8 @@ export async function sendUserNotification(userEmail: string, reportDetails: { t
         </div>
         
         <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 40px;">
-          Ini adalah pesan otomatis dari sistem SiLapor.<br/>
-          &copy; 2024 SiLapor. Semua hak dilindungi.
+          Ini adalah pesan otomatis dari sistem Laporin.<br/>
+          &copy; 2024 Laporin. Semua hak dilindungi.
         </p>
       </div>
     `,

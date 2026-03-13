@@ -247,7 +247,7 @@ export default function Home() {
     
     const shareData = {
         title: `Laporan: ${selectedReport.title}`,
-        text: `Detail Laporon SiLapor:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+        text: `Detail Laporon Laporin:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
         url: window.location.origin + `/laporan?id=${selectedReport.id}`
     };
 
@@ -299,13 +299,13 @@ export default function Home() {
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-transparent group-hover:scale-110 transition-transform duration-300">
-              <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
+              <img src="/images/logolaporin.png" alt="Laporin Logo" className="h-full w-full object-contain" />
             </div>
             <span className={cn(
               "text-xl font-bold tracking-tight transition-colors duration-300",
               isScrolled ? "text-foreground" : "text-white"
             )}>
-              SiLapor
+              Laporin
             </span>
           </Link>
 
@@ -463,7 +463,7 @@ export default function Home() {
                       <span className="text-[#10b981] italic font-medium">Pengaduan Rakyat</span>
                     </h1>
                     <p className="mt-8 text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
-                      Wadah aspirasi masyarakat SiLapor yang transparan, profesional, dan responsif terhadap seluruh laporan Anda.
+                      Wadah aspirasi masyarakat Laporin yang transparan, profesional, dan responsif terhadap seluruh laporan Anda.
                     </p>
                   </motion.div>
 
@@ -657,7 +657,7 @@ export default function Home() {
                      className="mb-16"
                    >
                      <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-center md:text-left">Perangkat Desa</h2>
-                     <p className="mt-4 text-muted-foreground text-lg text-center md:text-left">Tokoh-tokoh penggerak pembangunan SiLapor.</p>
+                     <p className="mt-4 text-muted-foreground text-lg text-center md:text-left">Tokoh-tokoh penggerak pembangunan Laporin.</p>
                    </motion.div>
 
                    <div className="relative overflow-hidden">

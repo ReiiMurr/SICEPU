@@ -257,7 +257,7 @@ export default function CreateAduanPage() {
                         complaint_id: newComplaint.id,
                         status: "Baru",
                         description: "Laporan telah diteruskan ke Admin",
-                        admin_name: "SiLapor SYSTEM"
+                        admin_name: "Laporin SYSTEM"
                     });
                 } catch (progressErr) {
                     console.warn("Failed to insert initial progress entry:", progressErr);
@@ -318,9 +318,9 @@ export default function CreateAduanPage() {
                             className="flex items-center gap-3"
                         >
                             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-transparent">
-                                <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
+                                <img src="/images/logolaporin.png" alt="Laporin Logo" className="h-full w-full object-contain" />
                             </div>
-                            <h1 className="text-xl font-bold tracking-tight">SiLapor</h1>
+                            <h1 className="text-xl font-bold tracking-tight">Laporin</h1>
                         </Link>
                     </div>
 

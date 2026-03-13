@@ -1,8 +1,8 @@
-# 🏔️ SiLapor - Sistem Informasi Cepat Pengaduan Umum
+# 🏔️ Laporin - Sistem Informasi Cepat Pengaduan Umum
 
 > **Transforming Village Governance through Professional Digital Transparency.**
 
-SiLapor is a premium, high-performance citizen complaint and aspiration platform designed specifically for modern Indonesian village governance. It bridges the gap between citizens and village officials with a sleek, intuitive, and real-time interface.
+Laporin is a premium, high-performance citizen complaint and aspiration platform designed specifically for modern Indonesian village governance. It bridges the gap between citizens and village officials with a sleek, intuitive, and real-time interface.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-emerald?style=for-the-badge&logo=supabase)](https://supabase.com/)
@@ -43,8 +43,8 @@ SiLapor is a premium, high-performance citizen complaint and aspiration platform
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/ReiiMurr/SiLapor.git
-cd SiLapor
+git clone https://github.com/ReiiMurr/Laporin.git
+cd Laporin
 ```
 
 ### 2. Install dependencies
@@ -68,7 +68,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application in ac
 ---
 
 ## 🎨 Design Philosophy
-SiLapor is built with a **Mature & Professional** aesthetic. We avoid flashy "AI-slop" gradients and oversized elements, focusing instead on:
+Laporin is built with a **Mature & Professional** aesthetic. We avoid flashy "AI-slop" gradients and oversized elements, focusing instead on:
 - **High Information Density**: Built for productive administrative work.
 - **Clean Typography**: Using Lexend for maximum readability.
 - **Responsiveness**: Fully optimized for both desktop and mobile users.

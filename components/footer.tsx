@@ -13,9 +13,9 @@ export function Footer() {
                     <div className="space-y-6">
                         <div className="flex items-center gap-3">
                             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-transparent">
-                                <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
+                                <img src="/images/logolaporin.png" alt="Laporin Logo" className="h-full w-full object-contain" />
                             </div>
-                            <h2 className="text-xl font-bold tracking-tight text-foreground">SiLapor</h2>
+                            <h2 className="text-xl font-bold tracking-tight text-foreground">Laporin</h2>
                         </div>
                         <p className="text-sm leading-relaxed max-w-xs">
                             Mewujudkan tata kelola desa yang transparan, profesional, dan responsif terhadap
@@ -54,7 +54,7 @@ export function Footer() {
                                     <MapPin size={16} className="text-primary" />
                                 </div>
                                 <span className="leading-relaxed group-hover:text-foreground transition-colors">
-                                    Jl. Melati No. 45, SiLapor, Kec. Jaya Makmur, Kabupaten Bogor, 16810
+                                    Jl. Melati No. 45, Laporin, Kec. Jaya Makmur, Kabupaten Bogor, 16810
                                 </span>
                             </li>
                             <li className="flex items-center gap-3 group">
@@ -67,7 +67,7 @@ export function Footer() {
                                 <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
                                     <Mail size={16} className="text-primary" />
                                 </div>
-                                <span className="group-hover:text-foreground transition-colors">kontak@SiLapor.go.id</span>
+                                <span className="group-hover:text-foreground transition-colors">kontak@laporin.go.id</span>
                             </li>
                         </ul>
                     </div>
@@ -112,7 +112,7 @@ export function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="mt-20 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium">
-                    <p>© 2024 Pemerintah SiLapor. All rights reserved.</p>
+                    <p>© 2024 Pemerintah Laporin. All rights reserved.</p>
                     <div className="flex gap-8">
                         <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
                         <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>

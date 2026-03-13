@@ -173,9 +173,9 @@ export default function LaporankuPage() {
                <div className="mx-auto flex max-w-6xl items-center justify-between">
                     <Link href="/" className="flex items-center gap-3 group">
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent group-hover:scale-110 transition-transform">
-                            <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
+                            <img src="/images/logolaporin.png" alt="Laporin Logo" className="h-full w-full object-contain" />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">SiLapor</h1>
+                        <h1 className="text-xl font-bold tracking-tight">Laporin</h1>
                     </Link>
 
                     <nav className="hidden items-center gap-1 lg:flex">

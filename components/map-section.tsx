@@ -86,7 +86,7 @@ export function MapSection() {
                                 <h4 className="font-black text-2xl tracking-tighter uppercase">Area Operasional</h4>
                             </div>
                             <p className="text-base text-muted-foreground leading-relaxed font-medium">
-                                Sistem SiLapor dirancang untuk melayani wilayah geografis yang luas. Data koordinat yang ditampilkan membantu dalam pemetaan sebaran aduan warga secara akurat.
+                                Sistem Laporin dirancang untuk melayani wilayah geografis yang luas. Data koordinat yang ditampilkan membantu dalam pemetaan sebaran aduan warga secara akurat.
                             </p>
                             <div className="mt-8 flex items-center gap-2">
                                 <span className="inline-block w-8 h-0.5 bg-primary" />

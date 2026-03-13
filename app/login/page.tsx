@@ -161,9 +161,9 @@ function LoginForm() {
             <div className="mb-auto">
               <Link href="/" className="inline-flex items-center gap-2 group mb-12">
                 <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-                   <img src="/images/logolaporin.png" alt="SiLapor" className="h-8 w-8 object-contain" />
+                   <img src="/images/logolaporin.png" alt="Laporin" className="h-8 w-8 object-contain" />
                 </div>
-                <span className="font-extrabold text-2xl tracking-tighter text-foreground">SiLapor</span>
+                <span className="font-extrabold text-2xl tracking-tighter text-foreground">Laporin</span>
               </Link>
 
               <div className="space-y-3 mb-12">
@@ -266,7 +266,7 @@ function LoginForm() {
                 <div className="h-1 w-16 bg-emerald-400 mb-8 rounded-full" />
                 <h3 className="text-4xl font-black leading-tight mb-4">Transparansi Desa <br />di Genggaman Anda</h3>
                 <p className="text-emerald-50/80 text-lg max-w-sm leading-relaxed">
-                  Platform digital SiLapor hadir untuk memudahkan interaksi antara warga dan pemerintah desa secara profesional.
+                  Platform digital Laporin hadir untuk memudahkan interaksi antara warga dan pemerintah desa secara profesional.
                 </p>
               </div>
 

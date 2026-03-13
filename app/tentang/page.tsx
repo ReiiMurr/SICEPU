@@ -89,9 +89,9 @@ export default function TentangPage() {
                 <div className="mx-auto flex max-w-6xl items-center justify-between">
                     <Link href="/" className="flex items-center gap-3 group">
                         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-transparent group-hover:scale-110 transition-transform">
-                            <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
+                            <img src="/images/logolaporin.png" alt="Laporin Logo" className="h-full w-full object-contain" />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">SiLapor</h1>
+                        <h1 className="text-xl font-bold tracking-tight">Laporin</h1>
                     </Link>
 
                     <nav className="hidden items-center gap-1 lg:flex">
@@ -171,7 +171,7 @@ export default function TentangPage() {
                                 <span className="text-[#10b981] italic">Transparansi Digital</span>
                             </h1>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                                SiLapor adalah platform resmi aspirasi dan pengaduan online yang dirancang khusus untuk mempercepat respon pemerintah desa terhadap kebutuhan warga.
+                                Laporin adalah platform resmi aspirasi dan pengaduan online yang dirancang khusus untuk mempercepat respon pemerintah desa terhadap kebutuhan warga.
                             </p>
                         </motion.div>
                     </div>

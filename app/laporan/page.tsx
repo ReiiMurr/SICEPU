@@ -162,7 +162,7 @@ export default function LaporanPublikPage() {
     
     const shareData = {
         title: `Laporan: ${selectedReport.title}`,
-        text: `Detail Laporon SiLapor:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
+        text: `Detail Laporon Laporin:\nJudul: ${selectedReport.title}\nLokasi: ${selectedReport.location}\nStatus: ${selectedReport.status}\nDeskripsi: ${selectedReport.description}`,
         url: window.location.origin + `/laporan?id=${selectedReport.id}`
     };
 
@@ -193,7 +193,7 @@ export default function LaporanPublikPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent group-hover:scale-110 transition-transform">
               <img src="/images/logolaporin.png" alt="SiLapor Logo" className="h-full w-full object-contain" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight">SiLapor</h1>
+            <h1 className="text-xl font-bold tracking-tight">Laporin</h1>
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex">
@@ -254,7 +254,7 @@ export default function LaporanPublikPage() {
                     <span className="text-[#10b981] font-bold text-[10px] uppercase tracking-[0.3em] mb-4 inline-block">Masyarakat Terbuka</span>
                     <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">Eksplorasi Aduan Publik</h2>
                     <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-                      Wadah keterbukaan informasi atas seluruh aduan masyarakat SiLapor.
+                      Wadah keterbukaan informasi atas seluruh aduan masyarakat Laporin.
                     </p>
                   </motion.div>
                 </div>
