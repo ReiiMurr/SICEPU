@@ -460,7 +460,7 @@ export default function Home() {
                     </span>
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[1.05] tracking-tight drop-shadow-2xl">
                       Layanan Aspirasi & <br />
-                      <span className="text-[#10b981] italic font-medium">Pengaduan Rakyat</span>
+                      <span className="text-[#10b981] italic font-medium">Pengaduan Masyarakat</span>
                     </h1>
                     <p className="mt-8 text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
                       Wadah aspirasi masyarakat Laporin yang transparan, profesional, dan responsif terhadap seluruh laporan Anda.
