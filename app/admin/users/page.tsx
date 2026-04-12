@@ -84,10 +84,7 @@ export default function AdminUsersPage() {
                     <button onClick={fetchUsers} className="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-slate-900 border border-border shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                         <RefreshCw size={16} className="text-slate-600" />
                     </button>
-                    <button className="flex items-center gap-2 bg-slate-900 dark:bg-primary text-white px-4 py-2 rounded-lg font-bold text-xs shadow-sm hover:opacity-90 transition-all">
-                        <UserPlus size={14} />
-                        Tambah Petugas
-                    </button>
+
                 </div>
             </div>
 

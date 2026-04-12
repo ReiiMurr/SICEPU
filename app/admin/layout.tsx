@@ -248,9 +248,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <motion.aside
                 initial={false}
                 animate={{ width: isSidebarOpen ? 260 : 80 }}
-                className="fixed left-0 top-0 z-40 hidden h-screen border-r border-border bg-white dark:bg-slate-950 lg:block transition-all duration-300"
+                className="relative z-40 hidden border-r border-border bg-white dark:bg-slate-950 lg:block transition-all duration-300 shrink-0"
             >
-                <NavContent />
+                <div className="sticky top-0 h-screen flex flex-col">
+                    <NavContent />
+                </div>
             </motion.aside>
 
             {/* Mobile Nav Top */}
@@ -310,8 +312,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Main Content Area */}
             <main
                 className={cn(
-                    "flex-1 w-full transition-all duration-300 pt-16 lg:pt-0",
-                    isSidebarOpen ? "lg:ml-[260px]" : "lg:ml-[80px]"
+                    "flex-1 min-w-0 transition-all duration-300 pt-16 lg:pt-0"
                 )}
             >
                 {/* Desktop Header */}
