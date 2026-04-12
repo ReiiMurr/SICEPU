@@ -112,7 +112,7 @@ export function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="mt-20 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium">
-                    <p>© 2024 Pemerintah Laporin. All rights reserved.</p>
+                    <p>© 2026 Pemerintah Laporin. All rights reserved.</p>
                     <div className="flex gap-8">
                         <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
                         <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
