@@ -189,38 +189,7 @@ export default function AdminSettingsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-950 border border-border">
-                                            <div className="flex items-center gap-3">
-                                                <Globe size={16} className="text-slate-400" />
-                                                <div className="space-y-0.5">
-                                                    <p className="text-xs font-bold text-slate-900 dark:text-white">Laporan Publik</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Visibilitas Masyarakat</p>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={() => setSettings({ ...settings, allowPublic: !settings.allowPublic })}
-                                                className={cn("w-9 h-5 rounded-full transition-all relative", settings.allowPublic ? "bg-primary" : "bg-slate-300 dark:bg-slate-800")}
-                                            >
-                                                <div className={cn("w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-all", settings.allowPublic ? "left-4.75" : "left-0.75")} />
-                                            </button>
-                                        </div>
-                                        <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-950 border border-border">
-                                            <div className="flex items-center gap-3">
-                                                <Wrench size={16} className="text-slate-400" />
-                                                <div className="space-y-0.5">
-                                                    <p className="text-xs font-bold text-slate-900 dark:text-white">Maintenance Mode</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Kunci Fitur Input</p>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={() => setSettings({ ...settings, maintenance: !settings.maintenance })}
-                                                className={cn("w-9 h-5 rounded-full transition-all relative", settings.maintenance ? "bg-rose-500" : "bg-slate-300 dark:bg-slate-800")}
-                                            >
-                                                <div className={cn("w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-all", settings.maintenance ? "left-4.75" : "left-0.75")} />
-                                            </button>
-                                        </div>
-                                    </div>
+
                                 </div>
                             )}
 
