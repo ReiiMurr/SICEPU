@@ -37,8 +37,6 @@ export default function AdminSettingsPage() {
         apiKey: "sc_live_************************"
     });
     const [activeTab, setActiveTab] = useState("Umum");
-    const [systemLogs, setSystemLogs] = useState<any[]>([]);
-    const [isLoggingLoading, setIsLoggingLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
@@ -48,42 +46,6 @@ export default function AdminSettingsPage() {
             setSettings(JSON.parse(saved));
         }
     }, []);
-
-    const fetchLogs = async () => {
-        setIsLoggingLoading(true);
-        try {
-            const supabase = getSupabaseClient();
-            const { data, error } = await supabase
-                .from("audit_logs")
-                .select("*")
-                .order("created_at", { ascending: false })
-                .limit(20);
-            
-            if (error) {
-                if (error.code === '42P01') {
-                    setSystemLogs([
-                        { action: "Login Admin", user_email: "admin@laporin.id", created_at: new Date().toISOString(), type: "info" },
-                        { action: "Status Update #LAP-01", user_email: "staff@laporin.id", created_at: new Date(Date.now() - 3600000).toISOString(), type: "success" },
-                        { action: "Update Profil Desa", user_email: "admin@laporin.id", created_at: new Date(Date.now() - 7200000).toISOString(), type: "info" },
-                        { action: "Ganti Password", user_email: "admin@laporin.id", created_at: new Date(Date.now() - 86400000).toISOString(), type: "warning" }
-                    ]);
-                    return;
-                }
-                throw error;
-            }
-            setSystemLogs(data || []);
-        } catch (err) {
-            console.error("Gagal sinkronisasi log:", err);
-        } finally {
-            setIsLoggingLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (activeTab === "Log Sistem") {
-            fetchLogs();
-        }
-    }, [activeTab]);
 
     const handleSave = async () => {
         setLoading(true);
@@ -132,9 +94,7 @@ export default function AdminSettingsPage() {
                 <div className="lg:col-span-1 space-y-1.5">
                     {[
                         { id: "Umum", icon: Settings, label: "Umum" },
-                        { id: "Notifikasi", icon: Bell, label: "Notifikasi" },
-                        { id: "Keamanan", icon: Shield, label: "Keamanan" },
-                        { id: "Log Sistem", icon: Terminal, label: "Log Sistem" }
+                        { id: "Notifikasi", icon: Bell, label: "Notifikasi" }
                     ].map((item) => (
                         <button
                             key={item.id}
@@ -194,20 +154,9 @@ export default function AdminSettingsPage() {
                                 <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center border border-border">
                                     {activeTab === "Umum" && <Layout size={16} />}
                                     {activeTab === "Notifikasi" && <Bell size={16} />}
-                                    {activeTab === "Keamanan" && <Shield size={16} />}
-                                    {activeTab === "Log Sistem" && <Terminal size={16} />}
                                 </div>
                                 <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">{activeTab}</h3>
                             </div>
-                            {activeTab === "Log Sistem" && (
-                                <button 
-                                    onClick={fetchLogs}
-                                    disabled={isLoggingLoading}
-                                    className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-md transition-all text-slate-400"
-                                >
-                                    <RefreshCw size={14} className={cn(isLoggingLoading && "animate-spin")} />
-                                </button>
-                            )}
                         </div>
 
                         <div className="p-8 space-y-8">
@@ -304,104 +253,23 @@ export default function AdminSettingsPage() {
                                 </div>
                             )}
 
-                            {activeTab === "Keamanan" && (
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2.5">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Durasi Sesi Admin</label>
-                                            <select 
-                                                value={settings.sessionTimeout}
-                                                onChange={(e) => setSettings({...settings, sessionTimeout: e.target.value})}
-                                                className="w-full bg-slate-50 dark:bg-slate-950 border border-border rounded-lg py-2.5 px-4 text-xs font-bold outline-none transition-all text-slate-900 dark:text-white appearance-none"
-                                            >
-                                                <option>15 menit</option>
-                                                <option>30 menit</option>
-                                                <option>1 jam</option>
-                                                <option>Selamanya</option>
-                                            </select>
-                                        </div>
-                                        <div className="space-y-2.5">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Akses IP Terbatas</label>
-                                            <div className="relative">
-                                                <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                                                <input
-                                                    type="text"
-                                                    value={settings.ipWhitelist}
-                                                    onChange={(e) => setSettings({...settings, ipWhitelist: e.target.value})}
-                                                    className="w-full bg-slate-50 dark:bg-slate-950 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-bold font-mono outline-none transition-all text-slate-900 dark:text-white"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20">
-                                        <div className="flex gap-3">
-                                            <AlertCircle size={18} className="text-amber-600 mt-0.5" />
-                                            <div className="space-y-1">
-                                                <p className="text-xs font-bold text-amber-700">Peringatan Keamanan</p>
-                                                <p className="text-[10px] font-bold uppercase tracking-tight text-amber-600 leading-relaxed">IP Whitelist 0.0.0.0/0 berarti akses terbuka untuk seluruh alamat IP di internet.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeTab === "Log Sistem" && (
-                                <div className="space-y-3">
-                                    {isLoggingLoading ? (
-                                        <div className="py-20 text-center"><RefreshCw size={24} className="animate-spin text-slate-300 mx-auto" /></div>
-                                    ) : systemLogs.length === 0 ? (
-                                        <div className="py-20 text-center border border-dashed border-border rounded-xl">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Belum Ada Aktivitas Tercatat</p>
-                                        </div>
-                                    ) : (
-                                        systemLogs.map((log, i) => (
-                                            <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-950/50 border border-border group hover:border-slate-300 transition-all">
-                                                <div className="flex items-center gap-4">
-                                                    <div className={cn(
-                                                        "w-9 h-9 rounded-lg flex items-center justify-center border",
-                                                        log.type === "success" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : 
-                                                        log.type === "warning" ? "bg-amber-50 text-amber-600 border-amber-100" : 
-                                                        "bg-white dark:bg-slate-900 text-slate-600 border-border"
-                                                    )}>
-                                                        <Activity size={16} />
-                                                    </div>
-                                                    <div>
-                                                        <span className="text-xs font-bold block text-slate-900 dark:text-white tracking-tight">{log.action}</span>
-                                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{log.user_email || "System Engine"}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="text-[10px] font-bold text-slate-900 dark:text-white">
-                                                        {new Date(log.created_at).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })}
-                                                    </p>
-                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest opacity-60">
-                                                        {new Date(log.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            )}
                         </div>
 
-                        {activeTab !== "Log Sistem" && (
-                            <div className="px-8 py-6 bg-slate-50/50 dark:bg-slate-900/50 border-t border-border flex justify-end gap-3">
-                                <button
-                                    onClick={() => setMessage({ text: "Operasi dibatalkan.", type: 'error' })}
-                                    className="px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    onClick={handleSave}
-                                    disabled={loading}
-                                    className="px-8 py-2.5 rounded-lg bg-slate-900 dark:bg-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-sm hover:opacity-90 transition-all flex items-center gap-2"
-                                >
-                                    {loading ? <RefreshCw size={12} className="animate-spin" /> : "Simpan Pengaturan"}
-                                </button>
-                            </div>
-                        )}
+                        <div className="px-8 py-6 bg-slate-50/50 dark:bg-slate-900/50 border-t border-border flex justify-end gap-3">
+                            <button
+                                onClick={() => setMessage({ text: "Operasi dibatalkan.", type: 'error' })}
+                                className="px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                disabled={loading}
+                                className="px-8 py-2.5 rounded-lg bg-slate-900 dark:bg-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-sm hover:opacity-90 transition-all flex items-center gap-2"
+                            >
+                                {loading ? <RefreshCw size={12} className="animate-spin" /> : "Simpan Pengaturan"}
+                            </button>
+                        </div>
                     </motion.div>
                 </div>
             </div>
