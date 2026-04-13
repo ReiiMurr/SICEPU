@@ -77,11 +77,11 @@ export function Footer() {
                         <h3 className="mb-6 text-sm font-bold uppercase tracking-widest text-foreground">Tautan Cepat</h3>
                         <ul className="space-y-4 text-sm">
                             {[
-                                { label: "Tentang", href: "/tentang" },
-                                { label: "Anggaran Desa", href: "#" },
-                                { label: "Produk Hukum", href: "#" },
-                                { label: "Layanan Umum", href: "#" },
-                                { label: "Data Penduduk", href: "#" }
+                                { label: "Beranda", href: "/" },
+                                { label: "Tentang Kami", href: "/tentang" },
+                                { label: "Laporan Publik", href: "/laporan" },
+                                { label: "Aduan Masyarakat", href: "/aduan" },
+                                { label: "Buat Laporan", href: "/aduan/buat" }
                             ].map((link) => (
                                 <li key={link.label}>
                                     <motion.a 

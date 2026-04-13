@@ -35,10 +35,10 @@ type Complaint = {
 export default function AdminDashboard() {
   const [time, setTime] = useState(new Date());
   const [stats, setStats] = useState([
-    { label: "Total Laporan", value: "0", trend: "+12%", icon: <BarChart3 size={20} />, status: "total", color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" },
-    { label: "Menunggu", value: "0", trend: "-5%", icon: <Clock3 size={20} />, status: "baru", color: "text-amber-600 bg-amber-50 dark:bg-amber-500/10" },
-    { label: "Selesai", value: "0", trend: "+18%", icon: <CheckCircle2 size={20} />, status: "selesai", color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" },
-    { label: "Ditolak", value: "0", trend: "+2%", icon: <XCircle size={20} />, status: "ditolak", color: "text-rose-600 bg-rose-50 dark:bg-rose-500/10" },
+    { label: "Total Laporan", value: "0", icon: <BarChart3 size={20} />, status: "total", color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" },
+    { label: "Menunggu", value: "0", icon: <Clock3 size={20} />, status: "baru", color: "text-amber-600 bg-amber-50 dark:bg-amber-500/10" },
+    { label: "Selesai", value: "0", icon: <CheckCircle2 size={20} />, status: "selesai", color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" },
+    { label: "Ditolak", value: "0", icon: <XCircle size={20} />, status: "ditolak", color: "text-rose-600 bg-rose-50 dark:bg-rose-500/10" },
   ]);
   const [recentReports, setRecentReports] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -142,9 +142,6 @@ export default function AdminDashboard() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{stat.label}</p>
                 <div className="flex items-baseline gap-2 mt-0.5">
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white">{loading ? "..." : stat.value}</h3>
-                  <span className={cn("text-[9px] font-bold px-1.5 py-0.5 rounded", stat.trend.includes('+') ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" : "text-rose-600 bg-rose-50 dark:bg-rose-500/10")}>
-                    {stat.trend}
-                  </span>
                 </div>
               </div>
             </div>
