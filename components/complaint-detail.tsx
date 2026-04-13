@@ -123,13 +123,13 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                         
                         <div className="relative w-full h-full flex items-center justify-center p-0 md:p-12 mb-safe" onClick={e => e.stopPropagation()}>
                             <img 
-                                src={attachments.filter(url => getFileInfo(url).type === 'image')[selectedImageIdx]} 
+                                src={attachments.filter((url: string) => getFileInfo(url).type === 'image')[selectedImageIdx]} 
                                 className="max-h-full max-w-full object-contain select-none" 
                                 alt="Gallery Preview"
                             />
                             
                             {(() => {
-                                const imagesOnly = attachments.filter(url => getFileInfo(url).type === 'image');
+                                const imagesOnly = attachments.filter((url: string) => getFileInfo(url).type === 'image');
                                 if (imagesOnly.length <= 1) return null;
                                 
                                 return (
@@ -197,7 +197,7 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                                             key={idx} 
                                             onClick={() => {
                                                 if (type === 'image') {
-                                                    const imagesOnly = attachments.filter(url => getFileInfo(url).type === 'image');
+                                                    const imagesOnly = attachments.filter((url: string) => getFileInfo(url).type === 'image');
                                                     const imgIdx = imagesOnly.indexOf(url);
                                                     setSelectedImageIdx(imgIdx);
                                                 } else {
