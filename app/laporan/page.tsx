@@ -311,7 +311,13 @@ export default function LaporanPublikPage() {
                 ) : (
                   <div className="grid gap-10 md:grid-cols-2">
                     {filteredReports.map((report) => {
-                      const img = report.image ? (report.image.startsWith('[') ? JSON.parse(report.image)[0] : report.image) : "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop";
+                      const attachments = report.image ? (report.image.startsWith('[') ? JSON.parse(report.image) : [report.image]) : [];
+                      const firstImage = attachments.find((url: string) => {
+                        const ext = url.split('.').pop()?.toLowerCase().split('?')[0] || '';
+                        return ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].includes(ext);
+                      });
+                      const img = firstImage || "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop";
+                      
                       return (
                         <motion.article 
                           key={report.id}

@@ -13,6 +13,9 @@ import {
   ShieldCheck,
   Eye,
   Image as ImageIcon,
+  FileText,
+  PlayCircle,
+  ExternalLink,
   ChevronRight,
   Info,
   X
@@ -37,7 +40,17 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
         }
         return () => { document.body.style.overflow = 'unset'; };
     }, [selectedImageIdx]);
-    const images = report.image ? (report.image.startsWith('[') ? JSON.parse(report.image) : [report.image]) : [];
+    const attachments = report.image ? (report.image.startsWith('[') ? JSON.parse(report.image) : [report.image]) : [];
+    
+    const getFileInfo = (url: string) => {
+        const ext = url.split('.').pop()?.toLowerCase().split('?')[0] || '';
+        const imageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+        const videoExtensions = ['mp4', 'webm', 'ogg'];
+        
+        if (imageExtensions.includes(ext)) return { type: 'image' };
+        if (videoExtensions.includes(ext)) return { type: 'video' };
+        return { type: 'document' };
+    };
     
     const getStatusConfig = (status: string) => {
         const s = (status || "baru").toLowerCase();
@@ -110,27 +123,32 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                         
                         <div className="relative w-full h-full flex items-center justify-center p-0 md:p-12 mb-safe" onClick={e => e.stopPropagation()}>
                             <img 
-                                src={images[selectedImageIdx]} 
+                                src={attachments.filter(url => getFileInfo(url).type === 'image')[selectedImageIdx]} 
                                 className="max-h-full max-w-full object-contain select-none" 
                                 alt="Gallery Preview"
                             />
                             
-                            {images.length > 1 && (
-                                <>
-                                    <button 
-                                        onClick={() => setSelectedImageIdx(prev => prev === 0 ? images.length - 1 : prev! - 1)}
-                                        className="absolute left-6 top-1/2 -translate-y-1/2 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
-                                    >
-                                        <ChevronRight className="rotate-180" size={24} />
-                                    </button>
-                                    <button 
-                                        onClick={() => setSelectedImageIdx(prev => prev === images.length - 1 ? 0 : prev! + 1)}
-                                        className="absolute right-6 top-1/2 -translate-y-1/2 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
-                                    >
-                                        <ChevronRight size={24} />
-                                    </button>
-                                </>
-                            )}
+                            {(() => {
+                                const imagesOnly = attachments.filter(url => getFileInfo(url).type === 'image');
+                                if (imagesOnly.length <= 1) return null;
+                                
+                                return (
+                                    <>
+                                        <button 
+                                            onClick={() => setSelectedImageIdx(prev => prev === 0 ? imagesOnly.length - 1 : prev! - 1)}
+                                            className="absolute left-6 top-1/2 -translate-y-1/2 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
+                                        >
+                                            <ChevronRight className="rotate-180" size={24} />
+                                        </button>
+                                        <button 
+                                            onClick={() => setSelectedImageIdx(prev => prev === imagesOnly.length - 1 ? 0 : prev! + 1)}
+                                            className="absolute right-6 top-1/2 -translate-y-1/2 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
+                                        >
+                                            <ChevronRight size={24} />
+                                        </button>
+                                    </>
+                                );
+                            })()}
                         </div>
                     </motion.div>
                 )}
@@ -168,22 +186,48 @@ export function ComplaintDetail({ report, onClose, onShare }: ComplaintDetailPro
                             <ImageIcon size={18} className="text-primary" />
                             <span>Lampiran</span>
                         </div>
-                        {images.length > 0 ? (
+                        {attachments.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {images.map((img: string, idx: number) => (
-                                    <div 
-                                        key={idx} 
-                                        onClick={() => setSelectedImageIdx(idx)}
-                                        className="aspect-video rounded-2xl overflow-hidden border border-border group relative cursor-pointer"
-                                    >
-                                        <img src={img} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt={`Lampiran ${idx+1}`} />
-                                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <div className="bg-white/20 backdrop-blur-md p-2 rounded-full border border-white/30 text-white">
-                                                <Eye size={20} />
+                                {attachments.map((url: string, idx: number) => {
+                                    const { type } = getFileInfo(url);
+                                    const fileName = url.split('/').pop()?.split('?')[0] || `Lampiran ${idx + 1}`;
+                                    
+                                    return (
+                                        <div 
+                                            key={idx} 
+                                            onClick={() => {
+                                                if (type === 'image') {
+                                                    const imagesOnly = attachments.filter(url => getFileInfo(url).type === 'image');
+                                                    const imgIdx = imagesOnly.indexOf(url);
+                                                    setSelectedImageIdx(imgIdx);
+                                                } else {
+                                                    window.open(url, '_blank');
+                                                }
+                                            }}
+                                            className="aspect-video rounded-2xl overflow-hidden border border-border group relative cursor-pointer bg-muted/20"
+                                        >
+                                            {type === 'image' ? (
+                                                <img src={url} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt={`Lampiran ${idx+1}`} />
+                                            ) : type === 'video' ? (
+                                                <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white p-4">
+                                                    <PlayCircle size={40} className="mb-2 text-primary" />
+                                                    <span className="text-[10px] font-bold text-center truncate w-full px-2">{fileName}</span>
+                                                </div>
+                                            ) : (
+                                                <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/50 p-4">
+                                                    <FileText size={40} className="mb-2 text-primary" />
+                                                    <span className="text-[10px] font-bold text-center truncate w-full px-2">{fileName}</span>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <div className="bg-white/20 backdrop-blur-md p-2 rounded-full border border-white/30 text-white">
+                                                    {type === 'image' ? <Eye size={20} /> : <ExternalLink size={20} />}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         ) : (
                             <div className="p-8 rounded-2xl bg-muted/30 border border-dashed border-border flex flex-col items-center justify-center text-muted-foreground">
