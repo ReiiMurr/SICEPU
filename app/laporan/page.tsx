@@ -17,7 +17,9 @@ import {
   Share2,
   X,
   PlusCircle,
-  Clock
+  Clock,
+  FileText,
+  Image as ImageIcon
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -327,8 +329,20 @@ export default function LaporanPublikPage() {
                           onClick={() => { setSelectedReport(report); window.scrollTo({ top: 0, behavior: 'instant' }); }}
                           className="group cursor-pointer bg-card border border-border rounded-lg overflow-hidden transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_45px_100px_-25px_rgba(0,0,0,0.2)] hover:border-primary/40 transition-all duration-300"
                         >
-                          <div className="aspect-[16/10] overflow-hidden">
-                            <img src={img} alt={report.title} className="w-full h-full object-cover" />
+                          <div className="aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-900 flex items-center justify-center relative">
+                            {firstImage ? (
+                                <img src={img} alt={report.title} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                            ) : attachments.length > 0 ? (
+                                <div className="flex flex-col items-center justify-center text-primary/30">
+                                    <FileText size={64} strokeWidth={1.5} />
+                                    <span className="text-[10px] font-bold uppercase mt-2 tracking-widest">Dokumen Lampiran</span>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center text-slate-300">
+                                    <ImageIcon size={64} strokeWidth={1.5} />
+                                    <span className="text-[10px] font-bold uppercase mt-2 tracking-widest text-slate-400">Tanpa Lampiran</span>
+                                </div>
+                            )}
                           </div>
                           <div className="p-10">
                             <div className="flex flex-wrap items-center gap-4 mb-6">

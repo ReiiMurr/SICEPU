@@ -210,7 +210,8 @@ export default function CreateAduanPage() {
             for (const att of attachments) {
                 const file = att.file;
                 const fileExt = file.name.split('.').pop();
-                const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+                const originalName = file.name.split('.').slice(0, -1).join('.').replace(/[^a-zA-Z0-9]/g, '_');
+                const fileName = `${Math.random().toString(36).substring(2, 7)}-${originalName}.${fileExt}`;
                 const filePath = `reports/${user.id}/${fileName}`;
 
                 const { error: uploadError } = await supabase.storage

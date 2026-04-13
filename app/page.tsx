@@ -40,7 +40,8 @@ import {
   Share2,
   ShieldCheck,
   TrendingUp,
-  User
+  User,
+  Image as ImageIcon
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -589,7 +590,13 @@ export default function Home() {
                   ) : (
                     <div className="grid gap-10 md:grid-cols-2">
                       {reports.map((report) => {
-                        const images = report.image ? (report.image.startsWith('[') ? JSON.parse(report.image) : [report.image]) : ["https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"];
+                        const attachments = report.image ? (report.image.startsWith('[') ? JSON.parse(report.image) : [report.image]) : [];
+                        const firstImage = attachments.find((url: string) => {
+                            const ext = url.split('.').pop()?.toLowerCase().split('?')[0] || '';
+                            return ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].includes(ext);
+                        });
+                        const imgCover = firstImage || "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop";
+
                         return (
                           <motion.article
                             key={report.id}
@@ -603,9 +610,21 @@ export default function Home() {
                              }}
                              className="group cursor-pointer bg-card border border-border rounded-lg overflow-hidden transition-all hover:shadow-2xl hover:border-primary/40"
                            >
-                             <div className="aspect-[16/10] overflow-hidden relative">
-                               <img src={images[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={report.title} />
-                               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                             <div className="aspect-[16/10] overflow-hidden relative bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                               {firstImage ? (
+                                 <img src={imgCover} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={report.title} />
+                               ) : attachments.length > 0 ? (
+                                 <div className="flex flex-col items-center justify-center text-primary/30">
+                                   <FileText size={48} strokeWidth={1.5} />
+                                   <span className="text-[10px] font-bold uppercase mt-2 tracking-widest text-center px-4">Dokumen Lampiran</span>
+                                 </div>
+                               ) : (
+                                 <div className="flex flex-col items-center justify-center text-slate-300">
+                                   <ImageIcon size={48} strokeWidth={1.5} />
+                                   <span className="text-[10px] font-bold uppercase mt-2 tracking-widest">Tanpa Lampiran</span>
+                                 </div>
+                               )}
+                               <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                              </div>
                             <div className="p-8">
                               <div className="flex items-center gap-4 mb-4">
