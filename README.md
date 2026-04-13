@@ -1,106 +1,89 @@
-# 🏔️ Laporin - Sistem Informasi Cepat Pengaduan Umum
+# 🏔️ Laporin - Ekosistem Pelaporan Desa Cerdas
 
-> **Transforming Village Governance through Professional Digital Transparency.**
+> **Memberdayakan Transparansi melalui Tata Kelola Digital Mutakhir.**
 
-Laporin is a premium, high-performance citizen complaint and aspiration platform designed specifically for modern Indonesian village governance. It bridges the gap between citizens and village officials with a sleek, intuitive, and real-time interface.
-
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Database-emerald?style=for-the-badge&logo=supabase)](https://supabase.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-blue?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Framer Motion](https://img.shields.io/badge/Framer_Motion-Animation-purple?style=for-the-badge&logo=framer)](https://www.framer.com/motion/)
+Laporin (v4.2.0-STABLE) adalah platform pengaduan dan aspirasi masyarakat premium berperforma tinggi yang dirancang khusus untuk tata kelola desa modern di Indonesia. Dibangun dengan fokus pada **Kepadatan Informasi** dan **UX yang Matang**, platform ini menjembatani kesenjangan antara warga dan perangkat desa dengan antarmuka yang elegan dan *real-time*.
 
 ---
 
-## ✨ Key Features
-
-### 🏛️ For Citizens (Masyarakat)
-- **Seamless Reporting**: Easy-to-use form with multi-file attachment support (Images, Videos, Documents).
-- **Public & Private Reports**: Choose your privacy level for every report.
-- **Real-time Tracking**: Monitor the status of your reports from "Baru" to "Selesai".
-- **Village Map**: Visual geographic distribution of reports.
-
-### 🛡️ For Admin (Perangkat Desa)
-- **Mature Dashboard**: A professional, distraction-free interface built for efficiency.
-- **Report Management**: Verify, process, and archive citizen aspirations in one place.
-- **Real-time Notifications**: Get instantly notified when a new report is submitted.
-- **User Management**: Monitor and manage registered citizen accounts.
-- **System Logs**: Track system performance and operational history.
+## 💎 Filosofi Desain Premium
+Laporin dibangun untuk kerja produktif. Kami mengutamakan **Kepadatan Informasi** dibandingkan elemen yang berukuran besar, memastikan administrator dapat mengelola volume data yang besar dengan efisien.
+- **Tipografi Lexend**: Dioptimalkan untuk keterbacaan jangka panjang.
+- **Native Dark Mode**: Dukungan penuh untuk lingkungan cahaya rendah.
+- **Glassmorphism UI**: Efek blur dan border halus untuk pengalaman visual yang mendalam.
+- **Mikro-interaktivitas**: Didukung oleh Framer Motion untuk antarmuka yang terasa "hidup".
 
 ---
 
-## 🚀 Tech Stack
+## ✨ Fitur Utama
 
-- **Core Framework**: [Next.js 15](https://nextjs.org/) (App Router)
-- **Database & Auth**: [Supabase](https://supabase.com/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **State/Hooks**: React Hooks & Context API
+### 🏛️ Untuk Masyarakat (Warga)
+- **Pelaporan Secepat Kilat**: Formulir intuitif yang mendukung lampiran multi-format (Gambar, Video 4K, Dokumen PDF/DOCX).
+- **Prioritas Privasi**: Pilih antara laporan Publik atau Privat untuk aspirasi yang bersifat sensitif.
+- **Pelacakan Siklus Hidup**: Timeline visual untuk memantau status dari `Baru` → `Diproses` → `Selesai`.
+- **Pencarian Cerdas**: Temukan laporan publik dan lacak status via ID laporan unik.
+
+### 🛡️ Untuk Admin (Perangkat Desa)
+- **Pusat Komando Kritis**: Dashboard *real-time* dengan metrik performa layanan dan grafik pertumbuhan.
+- **Validasi Cepat**: Proses, verifikasi, dan tanggapi laporan dalam satu antarmuka administrasi terpadu.
+- **Tata Kelola Berbasis Peran (RBAC)**: Manajemen akun warga dan peran administratif yang aman.
+- **Wawasan Geospasial**: Tampilan peta interaktif untuk visualisasi distribusi laporan di seluruh wilayah desa.
+- **Notifikasi Pintar**: Peringatan email instan untuk laporan baru dan pembaruan status.
 
 ---
 
-## 🛠️ Getting Started
+## 🚀 Tech Stack Modern
 
-### 1. Clone the repository
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router, React 19)
+- **Database**: [Supabase](https://supabase.com/) (PostgreSQL + Row Level Security)
+- **Autentikasi**: Supabase Auth (Magic Links & Password)
+- **Styling**: [Tailwind CSS 3.4](https://tailwindcss.com/)
+- **Animasi**: [Framer Motion](https://www.framer.com/motion/)
+- **Ikon**: [Lucide React](https://lucide.dev/)
+- **Manajemen State**: Server Components + Client Hooks
+
+---
+
+## 🛠️ Instalasi & Konfigurasi
+
+### 1. Persyaratan Sistem
+- Node.js 18.x atau versi lebih tinggi
+- Proyek Supabase aktif
+
+### 2. Mulai Cepat
 ```bash
+# Clone repositori
 git clone https://github.com/ReiiMurr/Laporin.git
+
+# Masuk ke direktori
 cd Laporin
-```
 
-### 2. Install dependencies
-```bash
+# Instal dependensi
 npm install
-```
 
-### 3. Setup Environment Variables
-Create a `.env.local` file in the root directory and add your Supabase credentials:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-### 4. Run Development Server
-```bash
+# Jalankan server pengembangan
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) to see the application in action.
+
+### 3. Konfigurasi Environment
+Buat file `.env.local`:
+```env
+NEXT_PUBLIC_SUPABASE_URL=url_proyek_anda
+NEXT_PUBLIC_SUPABASE_ANON_KEY=anon_key_anda
+# Opsional: Konfigurasi NodeMailer untuk sistem notifikasi
+EMAIL_SERVER_HOST=smtp.gmail.com
+EMAIL_SERVER_USER=email_anda
+EMAIL_SERVER_PASSWORD=app_password_anda
+```
 
 ---
 
-## 🎨 Design Philosophy
-Laporin is built with a **Mature & Professional** aesthetic. We avoid flashy "AI-slop" gradients and oversized elements, focusing instead on:
-- **High Information Density**: Built for productive administrative work.
-- **Clean Typography**: Using Lexend for maximum readability.
-- **Responsiveness**: Fully optimized for both desktop and mobile users.
-- **Subtle Micro-animations**: Enhancing user experience without distraction.
+
+## 📜 Lisensi
+Didistribusikan di bawah Lisensi MIT. Lihat `LICENSE` untuk informasi lebih lanjut.
 
 ---
 
-## 🌐 Deployment Dinamis (Hostinger Node.js)
-
-Website ini sudah dikonfigurasi menggunakan mode **Standalone** dan memiliki Custom **Server.js** untuk memastikan kompatibilitas penuh dengan paket Node.js Hostinger.
-
-### Langkah-langkah Update di Hostinger:
-
-1.  **Build Proyek**: Di komputer lokal Anda, jalankan:
-    ```bash
-    npm run build
-    ```
-2.  **Siapkan File**: Ambil file/folder berikut untuk diunggah:
-    -   `.next` (terutama folder `standalone` di dalamnya jika Anda ingin menghemat ruang)
-    -   `public`
-    -   `server.js` (Entry point utama)
-    -   `package.json`
-    -   `.env` (Sudah diisi credentials Supabase & Mailer)
-3.  **Unggah ke File Manager**: Masukkan semua file di atas ke folder domain Anda di Hostinger.
-4.  **Konfigurasi Node.js di Dashboard Hostinger**:
-    -   **Application Root**: `/` (atau folder tempat Anda menaruh file)
-    -   **Application URL**: `https://domainanda.com`
-    -   **Application Startup File**: `server.js`
-    -   **Run Status**: Start/Restart
-5.  **Environment Variables**: Pastikan Anda sudah memasukkan semua variabel dari `.env` ke kolom "Environment Variables" di menu Node.js Hostinger.
-
-### Keunggulan Mode Dinamis:
--   **SEO Friendly**: Setiap laporan memiliki meta tag dinamis.
--   **API Terintegrasi**: Fitur kirim email notifikasi admin berjalan di sisi server.
--   **Keamanan**: Operasi database sensitif terlindungi di belakang server Node.js.
+<p align="center">
+  <b>Laporin</b> • Dibuat dengan ❤️ untuk Desa Digital Indonesia
+</p>
