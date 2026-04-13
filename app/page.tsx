@@ -41,7 +41,8 @@ import {
   ShieldCheck,
   TrendingUp,
   User,
-  Image as ImageIcon
+  Image as ImageIcon,
+  X
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -115,6 +116,7 @@ export default function Home() {
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [stats, setStats] = useState({ total: 0, diproses: 0, selesai: 0, baru: 0 });
+  const [isSearchResult, setIsSearchResult] = useState(false);
   const officialX = useMotionValue(0);
   const [isOfficialInteracting, setIsOfficialInteracting] = useState(false);
   const router = useRouter();
@@ -225,13 +227,55 @@ export default function Home() {
     window.location.reload();
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     setIsSearching(true);
-    setTimeout(() => {
-      router.push(`/laporan?search=${encodeURIComponent(searchQuery)}`);
-    }, 800);
+    
+    try {
+      const supabase = getSupabaseClient();
+      const { data } = await supabase
+        .from("complaints")
+        .select("*")
+        .or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%`)
+        .order("created_at", { ascending: false })
+        .limit(10);
+        
+      setReports(data || []);
+      setIsSearchResult(true);
+      
+      // Scroll to results section after a short delay for better UX
+      setTimeout(() => {
+        const resultsSection = document.getElementById("laporan-section");
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const clearSearch = async () => {
+    setSearchQuery("");
+    setIsSearchResult(false);
+    setLoadingReports(true);
+    
+    try {
+      const supabase = getSupabaseClient();
+      const { data } = await supabase
+        .from("complaints")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(4);
+      setReports(data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingReports(false);
+    }
   };
 
   const handleCreateReport = (e: React.MouseEvent) => {
@@ -569,19 +613,34 @@ export default function Home() {
 
               <section className="section-padding bg-muted/30">
                 <div className="container max-w-6xl mx-auto px-6 lg:px-8">
-                   <motion.div 
-                     initial={{ opacity: 0, y: 30 }}
-                     whileInView={{ opacity: 1, y: 0 }}
-                     transition={{ duration: 0.8 }}
-                     className="mb-16"
-                   >
-                     <div className="max-w-xl">
-                       <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-center md:text-left">Laporan Terkini</h2>
-                       <p className="mt-4 text-muted-foreground text-lg text-center md:text-left max-w-xl">
-                         Pantau transparansi penanganan yang sedang kami kerjakan.
-                       </p>
-                     </div>
-                   </motion.div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8 }}
+                      className="mb-16"
+                      id="laporan-section"
+                    >
+                      <div className="max-w-7xl flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="max-w-xl">
+                          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-center md:text-left">
+                            {isSearchResult ? "Hasil Pencarian" : "Laporan Terkini"}
+                          </h2>
+                          <p className="mt-4 text-muted-foreground text-lg text-center md:text-left">
+                            {isSearchResult 
+                              ? `Ditemukan ${reports.length} laporan terkait "${searchQuery}"`
+                              : "Pantau transparansi penanganan yang sedang kami kerjakan."}
+                          </p>
+                        </div>
+                        {isSearchResult && (
+                          <button 
+                            onClick={clearSearch}
+                            className="flex items-center gap-2 text-sm font-bold text-primary hover:underline self-center md:self-end"
+                          >
+                            <X size={16} /> Bersihkan Pencarian
+                          </button>
+                        )}
+                      </div>
+                    </motion.div>
 
                   {loadingReports ? (
                     <div className="grid gap-8 md:grid-cols-2">
